@@ -10,7 +10,10 @@ import { AppRoutes } from "./routes";
 import { getAllUsers } from "./controller/getAllUsers";
 import { getManager } from "typeorm";
 import { userRegisterInterface } from './interfaces/userInterface';
-
+import * as cookieparser from "cookie-parser";
+import * as passport from 'passport';
+import * as session from 'express-session';
+import * as expressValidator from 'express-validator';
 
 export class ChatServer {
 	public static readonly PORT: number = 8080;
@@ -38,6 +41,15 @@ export class ChatServer {
 
 	private config(): void {
 		this.port = process.env.PORT || ChatServer.PORT;
+		// this.app.use(bodyParser.json());
+		// this.app.use(bodyParser.urlencoded({extended: true}));
+		// this.app.use(cookieparser());
+		// this.app.use(passport.initialize());
+		// this.app.use(passport.session());
+		// this.app.use(session({ secret: 'courses', resave: false, saveUninitialized: true, }));
+		// this.app.use(expressValidator());
+
+
 	}
 
 	private sockets(): void {

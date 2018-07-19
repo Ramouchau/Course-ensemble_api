@@ -1,26 +1,32 @@
 
-import { getManager, getConnection, Connection } from "typeorm";
+import { getConnection, Connection } from "typeorm";
 import { User } from "../entity/User";
-import { UserRegisterRequest, UserRegisterResponse } from "../interfaces/auth-interfaces";
-import * as CryptoJS from 'crypto-js';
 import { Socket } from 'socket.io';
+import { hash, compare } from 'bcrypt';
+import {
+	UserRegisterRequest,
+	UserRegisterResponse,
+	UserLoginRequest,
+	UserLoginResponse
+} from "../interfaces/auth-interfaces";
 
-/**
- * Loads all posts from the database.
- */
 export async function userRegister(data: UserRegisterRequest, socket: Socket) {
 	const connection: Connection = getConnection();
-	const encryptedPass: CryptoJS.WordArray = CryptoJS.AES.encrypt(data.password, '©oÜΓŠ Eⁿ£Σßε');
-	const users = await connection.getRepository(User).find({ email: data.email });
+	const user = await connection.getRepository(User).findOne({ email: data.email });
 	let response: UserRegisterResponse = { code: 200, status: "ok" };
 
-	if (users.length === 0) {
+	if (!user) {
 		const newUser = new User();
 		newUser.email = data.email;
-		newUser.password = encryptedPass.toString();
 		newUser.username = data.username;
 		newUser.profilePicPath = "";
-		connection.manager.save(newUser);
+		hash(data.password, 10, (err, pass) => {
+			if (err) {
+				response = { code: 500, status: "Error password hashing" }
+			}
+			newUser.password = pass;
+			connection.manager.save(newUser);
+		})
 	}
 	else {
 		response.status = "Email already in use";
@@ -28,4 +34,26 @@ export async function userRegister(data: UserRegisterRequest, socket: Socket) {
 	}
 
 	socket.emit('register', response);
+}
+
+export async function userLogin(data: UserLoginRequest, socket: Socket) {
+	const connection: Connection = getConnection();
+	const user = await connection.getRepository(User).findOne({ email: data.email });
+	let response: UserLoginResponse = { code: 200, status: "ok" };
+
+	if (!user) {
+		response = { code: 401, status: "Wrong email / password" };
+		socket.emit('login', response);
+		return;
+	}
+
+	compare(data.password, user.email, (err, same) => {
+		if (!same) {
+			response = { code: 401, status: "Wrong email / password" };
+			socket.emit('login', response);
+			return;
+		}
+
+		socket.emit('login', response);
+	})
 }

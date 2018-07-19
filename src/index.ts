@@ -9,21 +9,21 @@ import * as passport from 'passport';
 import * as session from 'express-session';
 import * as expressValidator from 'express-validator';
 
-
 import { AppRoutes } from './routes';
 import { socketInit } from './sockets';
 
 
-createConnection();
 const port = process.env.PORT || 3000;
 let app = express();
+
+createConnection();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(expressValidator());
 app.use(cookieparser());
-/*app.use(passport.initialize());
+app.use(session({ secret: '©oÜΓŠ', resave: false, saveUninitialized: true, }));
+app.use(passport.initialize());
 app.use(passport.session());
-app.use(session({ secret: 'courses', resave: false, saveUninitialized: true, }));
-app.use(expressValidator());*/
 
 let server = createServer(app);
 let io = socketIo(server);

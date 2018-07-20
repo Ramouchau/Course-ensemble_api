@@ -12,7 +12,9 @@ export interface UserRegisterRequest {
 export interface UserLoginResponse {
 	status: string,
 	code: number,
-	token?: string
+	token?: string,
+	username?: string,
+	email?: string
 }
 
 export interface UserLoginRequest {

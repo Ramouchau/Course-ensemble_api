@@ -55,8 +55,10 @@ export async function userLogin(data: UserLoginRequest, socket: Socket) {
 			socket.emit('login', response);
 			return;
 		}
-		let payload = {id: user.id, email: user.email, username: user.username}
-		response.token = jwt.sign(payload, '©oÜΓŠ')
+		let payload = {id: user.id, email: user.email, username: user.username};
+		response.token = jwt.sign(payload, '©oÜΓŠ');
+		response.email = user.email;
+		response.username = user.username;
 		socket.emit('login', response);
 	})
 }

@@ -11,10 +11,17 @@ export interface UserRegisterRequest {
 
 export interface UserLoginResponse {
 	status: string,
-	code: number
+	code: number,
+	token?: string
 }
 
 export interface UserLoginRequest {
 	email: string,
-	password: string
+	password: string,
+}
+
+export interface UserToken {
+	id: number,
+	email: string,
+	username: string,
 }

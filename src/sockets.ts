@@ -1,4 +1,5 @@
 import * as socketIo from 'socket.io';
+import { PassportStatic } from 'passport';
 
 import { userRegister, userLogin } from './controller/auth-controller'
 import { getProfile } from './controller/profile-controller'

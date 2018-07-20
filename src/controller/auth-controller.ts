@@ -3,6 +3,8 @@ import { getConnection, Connection } from "typeorm";
 import { User } from "../entity/User";
 import { Socket } from 'socket.io';
 import { hash, compare } from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import * as passport from 'passport';
 import {
 	UserRegisterRequest,
 	UserRegisterResponse,
@@ -39,7 +41,7 @@ export async function userRegister(data: UserRegisterRequest, socket: Socket) {
 export async function userLogin(data: UserLoginRequest, socket: Socket) {
 	const connection: Connection = getConnection();
 	const user = await connection.getRepository(User).findOne({ email: data.email });
-	let response: UserLoginResponse = { code: 200, status: "ok" };
+	let response: UserLoginResponse = { code: 200, status: "ok"};
 
 	if (!user) {
 		response = { code: 401, status: "Wrong email / password" };
@@ -47,13 +49,14 @@ export async function userLogin(data: UserLoginRequest, socket: Socket) {
 		return;
 	}
 
-	compare(data.password, user.email, (err, same) => {
+	compare(data.password, user.password, (err, same) => {
 		if (!same) {
 			response = { code: 401, status: "Wrong email / password" };
 			socket.emit('login', response);
 			return;
 		}
-
+		let payload = {id: user.id, email: user.email, username: user.username}
+		response.token = jwt.sign(payload, '©oÜΓŠ')
 		socket.emit('login', response);
 	})
 }

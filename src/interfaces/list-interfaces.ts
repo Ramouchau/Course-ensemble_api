@@ -1,5 +1,6 @@
 
-export interface Item {
+
+/*export interface Item {
     id: number;
     name: string;
     addedId: number;
@@ -18,4 +19,21 @@ export interface List {
     createAt: Date;
     updateAt: Date;
     //users: User[];
+}*/
+
+export interface CreateListRequest {
+    token: string;
+    listName: string;
+    items: Array<Item>
+}
+
+export interface CreateListResponse {
+	status: string,
+	code: number
+}
+
+export interface Item {
+    name: string;
+    quantity: number;
+    status: number;
 }

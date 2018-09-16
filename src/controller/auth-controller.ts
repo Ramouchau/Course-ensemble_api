@@ -4,12 +4,13 @@ import { User } from "../entity/User";
 import { Socket } from 'socket.io';
 import { hash, compare } from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import * as passport from 'passport';
 import {
 	UserRegisterRequest,
 	UserRegisterResponse,
 	UserLoginRequest,
-	UserLoginResponse
+	UserLoginResponse,
+	getUserRequest,
+	getUserResponse
 } from "../interfaces/auth-interfaces";
 
 export async function userRegister(data: UserRegisterRequest, socket: Socket) {
@@ -27,21 +28,25 @@ export async function userRegister(data: UserRegisterRequest, socket: Socket) {
 				response = { code: 500, status: "Error password hashing" }
 			}
 			newUser.password = pass;
-			connection.manager.save(newUser);
+			connection.manager.save(newUser).then((res) => {
+				let payload = { id: res.id, email: res.email, username: res.username };
+				response.token = jwt.sign(payload, '©oÜΓŠ');
+				socket.emit('register', response);
+			});
+
 		})
 	}
 	else {
 		response.status = "Email already in use";
 		response.code = 400;
+		socket.emit('register', response);
 	}
-
-	socket.emit('register', response);
 }
 
 export async function userLogin(data: UserLoginRequest, socket: Socket) {
 	const connection: Connection = getConnection();
 	const user = await connection.getRepository(User).findOne({ email: data.email });
-	let response: UserLoginResponse = { code: 200, status: "ok"};
+	let response: UserLoginResponse = { code: 200, status: "ok" };
 
 	if (!user) {
 		response = { code: 401, status: "Wrong email / password" };
@@ -55,10 +60,19 @@ export async function userLogin(data: UserLoginRequest, socket: Socket) {
 			socket.emit('login', response);
 			return;
 		}
-		let payload = {id: user.id, email: user.email, username: user.username};
+		let payload = { id: user.id, email: user.email, username: user.username };
 		response.token = jwt.sign(payload, '©oÜΓŠ');
 		response.email = user.email;
 		response.username = user.username;
 		socket.emit('login', response);
+	})
+}
+
+export async function getUser(data: getUserRequest, socket: Socket) {
+	console.log(data);
+	let response: getUserResponse = { code: 200, status: "ok" };
+
+	jwt.verify(data.token, '©oÜΓŠ', (err, res) => {
+		console.log(res);
 	})
 }

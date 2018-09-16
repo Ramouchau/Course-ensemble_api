@@ -8,8 +8,7 @@ import { Session } from '../interfaces/session';
 export async function createList(data: CreateListRequest, socket: Socket) {
     const connection: Connection = getConnection();
     let response: CreateListResponse = { code: 200, status: "ok" };
-
-    let user = jwt.verify(data.token, "dada")
-
+		console.log(data)
+    let user = new Session(data.token);
     socket.emit('create-list', response);
 }

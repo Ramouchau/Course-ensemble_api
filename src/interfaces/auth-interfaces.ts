@@ -1,6 +1,7 @@
 export interface UserRegisterResponse {
 	status: string,
-	code: number
+	code: number,
+	token?: string
 }
 
 export interface UserRegisterRequest {
@@ -26,4 +27,15 @@ export interface UserToken {
 	id: number,
 	email: string,
 	username: string,
+}
+
+export interface getUserRequest {
+	token: string
+}
+
+export interface getUserResponse {
+	status: string,
+	code: number,
+	username?: string,
+	email?: string
 }

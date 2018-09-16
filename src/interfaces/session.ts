@@ -5,7 +5,10 @@ export class Session {
     email: string;
     username: string;
 
-    Session(token: string) {
-        jwt.verify(token, '©oÜΓŠ',)
+    constructor(token: string) {
+
+				let test = jwt.verify(token, '©oÜΓŠ')
+
+				console.log(test);
     }
 }

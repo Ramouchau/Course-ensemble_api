@@ -9,10 +9,12 @@ import {
 	UserRegisterResponse,
 	UserLoginRequest,
 	UserLoginResponse,
-	getUserRequest,
-	getUserResponse
+	GetUserRequest,
+	GetUserResponse,
+	UserToken
 } from "../interfaces/auth-interfaces";
 
+// Socket listener user-register
 export async function userRegister(data: UserRegisterRequest, socket: Socket) {
 	const connection: Connection = getConnection();
 	const user = await connection.getRepository(User).findOne({ email: data.email });
@@ -43,6 +45,7 @@ export async function userRegister(data: UserRegisterRequest, socket: Socket) {
 	}
 }
 
+// Socket listener user-login
 export async function userLogin(data: UserLoginRequest, socket: Socket) {
 	const connection: Connection = getConnection();
 	const user = await connection.getRepository(User).findOne({ email: data.email });
@@ -68,11 +71,28 @@ export async function userLogin(data: UserLoginRequest, socket: Socket) {
 	})
 }
 
-export async function getUser(data: getUserRequest, socket: Socket) {
-	console.log(data);
-	let response: getUserResponse = { code: 200, status: "ok" };
+// Socket listener get-user
+export async function getUser(data: GetUserRequest, socket: Socket) {
+	let response: GetUserResponse = { code: 200, status: "ok" };
+	const connection: Connection = getConnection();
 
-	jwt.verify(data.token, '©oÜΓŠ', (err, res) => {
-		console.log(res);
+	 jwt.verify(data.token, '©oÜΓŠ', async (err, res: UserToken) => {
+		if (err){
+			response.code = 401
+			response.status = "ko"
+			socket.emit('get-user', response);
+			return;
+		}
+
+		const user = await connection.getRepository(User).findOne(res.id);
+		if (!user){
+			response.code = 404
+			response.status = "ko"
+			socket.emit('get-user', response);
+			return;
+		}
+
+		response.user = { email: res.email, username: res.username, id: res.id};
+		socket.emit('get-user', response);
 	})
 }

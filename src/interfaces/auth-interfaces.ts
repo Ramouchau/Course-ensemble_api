@@ -29,13 +29,12 @@ export interface UserToken {
 	username: string,
 }
 
-export interface getUserRequest {
+export interface GetUserRequest {
 	token: string
 }
 
-export interface getUserResponse {
+export interface GetUserResponse {
 	status: string,
 	code: number,
-	username?: string,
-	email?: string
+	user?: UserToken
 }

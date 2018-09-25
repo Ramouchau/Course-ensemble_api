@@ -11,7 +11,7 @@ export class List {
     @Column()
     name: string;
 
-    @ManyToOne(type => User, owner => owner.owner_list)
+    @ManyToOne(type => User, owner => owner.owner_list, {cascade: true})
     owner: User;
 
     @OneToMany(type => Item, item => item.list) // note: we will create author property in the Photo class below
@@ -23,7 +23,7 @@ export class List {
     @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)", onUpdate: "CURRENT_TIMESTAMP(3)"})
     updateAt: Date;
 
-    @ManyToMany(type => User, user => user.users_list)
+    @ManyToMany(type => User, user => user.users_list, {cascade: true})
     @JoinTable()
     users: User[];
 

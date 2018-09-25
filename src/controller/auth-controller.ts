@@ -72,27 +72,8 @@ export async function userLogin(data: UserLoginRequest, socket: Socket) {
 }
 
 // Socket listener get-user
-export async function getUser(data: GetUserRequest, socket: Socket) {
+export async function getUser(user: User, data: GetUserRequest, socket: Socket) {
 	let response: GetUserResponse = { code: 200, status: "ok" };
-	const connection: Connection = getConnection();
-
-	 jwt.verify(data.token, '©oÜΓŠ', async (err, res: UserToken) => {
-		if (err){
-			response.code = 401
-			response.status = "ko"
-			socket.emit('get-user', response);
-			return;
-		}
-
-		const user = await connection.getRepository(User).findOne(res.id);
-		if (!user){
-			response.code = 404
-			response.status = "ko"
-			socket.emit('get-user', response);
-			return;
-		}
-
-		response.user = { email: res.email, username: res.username, id: res.id};
-		socket.emit('get-user', response);
-	})
+	response.user = { email: user.email, username: user.username, id: user.id };
+	socket.emit('get-user', response);
 }

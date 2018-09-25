@@ -14,7 +14,7 @@ export class Item {
     @ManyToOne(type => User, owner => owner.id)
     addBy: User;
 
-    @ManyToOne(type => List, list => list.items)
+    @ManyToOne(type => List, list => list.items, {cascade: true})
     list: List;
 
     @Column()

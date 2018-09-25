@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany} from "typeorm";
-import {List} from "./List";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from "typeorm";
+import { List } from "./List";
 
 @Entity()
 export class User {
@@ -24,9 +24,9 @@ export class User {
 
 	profilePicPath: string;
 
-    @OneToMany(type => List, list => list.owner) // note: we will create author property in the Photo class below
-    owner_list: List[]
+	@OneToMany(type => List, list => list.owner)
+	owner_list: List[]
 
-    @ManyToMany(type => List, list => list.users) // note: we will create author property in the Photo class below
-    users_list: List[];
+	@ManyToMany(type => List, list => list.users)
+	users_list: List[];
 }

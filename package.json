@@ -46,7 +46,7 @@
 		"typeorm": "0.2.7"
 	},
 	"scripts": {
-		"start": "concurrently \"tsc -w\" \"nodemon dist/index.js\" --kill-others",
-		"ts": "ts-node src/index.ts"
+		"start": "./node_modules/.bin/concurrently \"./node_modules/.bin/tsc -w\" \"./node_modules/.bin/nodemon dist/index.js\" --kill-others",
+		"ts": "./node_modules/.bin/ts-node src/index.ts"
 	}
 }

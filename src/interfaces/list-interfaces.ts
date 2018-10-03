@@ -39,6 +39,17 @@ export interface CreateListResponse {
 	idList?: number
 }
 
+export interface DeleteListRequest {
+	token: string
+	id: number
+}
+
+export interface DeleteListResponse {
+	status: string
+	code: number
+	idList?: number
+}
+
 export interface addUserToListRequest {
 	idList: number
 	idUser: number

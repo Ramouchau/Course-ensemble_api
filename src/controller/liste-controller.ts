@@ -8,7 +8,7 @@ import {
 	addUserToListRequest, addUserToListResponce,
 	addItemToListRequest, addItemToListResponce,
 	updateItemRequest, updateItemResponce, ClientList,
-	GetAllListResponce, GetAllListRequest
+	GetAllListResponce, GetAllListRequest, DeleteListResponse, DeleteListRequest
 } from '../interfaces/list-interfaces';
 
 
@@ -40,6 +40,27 @@ export async function createList(user: User, data: CreateListRequest, socket: So
 		socket.emit('create-list', response);
 	});
 }
+
+// delete-list
+export async function deleteList(user: User, data: DeleteListRequest, socket: Socket) {
+	const connection: Connection = getConnection();
+	let response: DeleteListResponse = { code: 200, status: "ok" };
+
+	let listRep = await connection.getRepository(List);
+	let list = await listRep.findOne(data.id);
+	if (list.owner !== user) {
+		response.code = 403;
+		response.status = "User is not the list owner";
+	} else
+		await listRep.remove(list);
+
+	// TODO : check if peoples on the list are unsubbed from the list or idk when deleted like does it bug or not
+
+	connection.manager.save(list).then(list => {
+		socket.emit('delete-list', response);
+	});
+}
+
 
 // add-user-to-list
 export async function addUserToList(user: User, data: addUserToListRequest, socket: Socket) {

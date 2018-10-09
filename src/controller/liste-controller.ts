@@ -18,6 +18,7 @@ export async function getAllList(user: User, data: GetAllListRequest, socket: So
 	let userLists = user.owner_list.concat(user.users_list);
 
 	response.lists  = userLists.map(list => {
+		socket.join(`list-${list.id}`)
 		let clientlist: ClientList = { id: list.id, name: list.name};
 		return clientlist;
 	});
@@ -153,26 +154,3 @@ export async function updateItem(user: User, data: updateItemRequest, socket: So
 	await itemRep.save(item);
 	socket.emit('update-item', response);
 }
-
-/*export async function updateItemStatus(user: User, data: updateItemStatusRequest, socket: Socket) {
-	const connection: Connection = getConnection();
-	let response: updateItemResponce = { code: 200, status: "ok" };
-	let itemRep = await connection.getRepository(Item);
-	let item = await itemRep.findOne(data.idItem);
-
-	if (!item) {
-		response.code = 404;
-		response.status = "not found";
-		socket.emit('update-item', response);
-		return;
-	}
-	else if (item.list.users.indexOf(user) == -1 && item.list.owner != user) {
-		response.code = 401;
-		response.status = "unauthorized";
-		socket.emit('update-item', response);
-		return;
-	}
-
-	await itemRep.save(item);
-	socket.emit('update-item', response);
-}*/

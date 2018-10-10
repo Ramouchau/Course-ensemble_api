@@ -6,7 +6,14 @@ import { UserToken } from './interfaces/auth-interfaces';
 import { User } from './entity/User';
 import { userRegister, userLogin, getUser } from './controller/auth-controller'
 import { getProfile } from './controller/profile-controller'
-import { createList, addUserToList, addItemToList, getAllList, deleteList } from './controller/liste-controller';
+import {
+    createList,
+    addUserToList,
+    addItemToList,
+    getAllList,
+    deleteList,
+    getListById
+} from './controller/liste-controller';
 import { Connection, getConnection } from 'typeorm';
 
 export const socketInit = (socket: socketIo.Socket) => {
@@ -20,8 +27,9 @@ export const socketInit = (socket: socketIo.Socket) => {
 	socket.on('add-item-to-list', (data) => requireAuth(data, socket, 'add-item-to-list', addItemToList));
 	socket.on('get-all-list', (data) => requireAuth(data, socket, 'get-all-list', getAllList));
 	socket.on('delete-list', (data) => requireAuth(data, socket, 'delete-list', deleteList));
-
 	socket.on('disconnect', () => console.log('Client disconnected'));
+    socket.on('get-list-bid', (data) => requireAuth(data, socket, 'get-list-bid', getListById));
+
 }
 
 const requireAuth = <T>(data: any, socket: socketIo.Socket, resRoute: string, func: Function) => {

@@ -10,7 +10,9 @@ export interface ClientList {
   items?: ClientItem[];
 }
 
-export interface GetAllListRequest {}
+export interface GetAllListRequest {
+	token: string
+}
 
 export interface GetAllListResponce {
   status: string;

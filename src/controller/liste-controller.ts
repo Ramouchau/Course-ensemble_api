@@ -59,24 +59,6 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
     socket.emit('get-list-bid', response);
 }
 
-
-// get-list-bid
-export async function getListById(user: User, data: GetListRequest, socket: Socket) {
-    const connection: Connection = getConnection();
-    let response: GetListResponce = { code: 200, status: "ok" }
-    let listRep = await connection.getRepository(List)
-		let list = await listRep.findOne(data.idList, { relations: ["owner"]});
-    if (list.owner.id !== user.id) {
-        response.code = 403;
-        response.status = "User is not the list owner";
-    } else
-        await listRep.remove(list);
-    let clientlist: ClientList = { id: list.id, name: list.name, items: list.items};
-    response.list = clientlist;
-
-    socket.emit('get-list-bid', response);
-}
-
 // create-list
 export async function createList(
   user: User,

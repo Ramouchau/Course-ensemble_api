@@ -4,11 +4,11 @@ import { List } from "../entity/List";
 import { User } from '../entity/User';
 import { Item } from '../entity/Item';
 import {
-	CreateListResponse,	CreateListRequest,
-	addUserToListRequest, addUserToListResponce,
-	addItemToListRequest, addItemToListResponce,
-	updateItemRequest, updateItemResponce, ClientList,
-	GetAllListResponce, GetAllListRequest, DeleteListResponse, DeleteListRequest
+    CreateListResponse, CreateListRequest,
+    addUserToListRequest, addUserToListResponce,
+    addItemToListRequest, addItemToListResponce,
+    updateItemRequest, updateItemResponce, ClientList,
+    GetAllListResponce, GetAllListRequest, DeleteListResponse, DeleteListRequest, GetListResponce, GetListRequest
 } from '../interfaces/list-interfaces';
 
 
@@ -24,6 +24,24 @@ export async function getAllList(user: User, data: GetAllListRequest, socket: So
 	});
 
 	socket.emit('get-all-list', response);
+}
+
+
+// get-list-bid
+export async function getListById(user: User, data: GetListRequest, socket: Socket) {
+    const connection: Connection = getConnection();
+    let response: GetListResponce = { code: 200, status: "ok" };
+    let listRep = await connection.getRepository(List);
+    let list = await listRep.findOne(data.idList);
+    if (list.owner !== user) {
+        response.code = 403;
+        response.status = "User is not the list owner";
+    } else
+        await listRep.remove(list);
+    let clientlist: ClientList = { id: list.id, name: list.name, items: list.items};
+    response.list = clientlist;
+
+    socket.emit('get-list-bid', response);
 }
 
 // create-list

@@ -6,14 +6,7 @@ import { UserToken } from './interfaces/auth-interfaces';
 import { User } from './entity/User';
 import { userRegister, userLogin, getUser } from './controller/auth-controller'
 import { getProfile } from './controller/profile-controller'
-import {
-    createList,
-    addUserToList,
-    addItemToList,
-    getAllList,
-    deleteList,
-    getListById
-} from './controller/liste-controller';
+import { createList, addUserToList, addItemToList, getAllList, deleteList, addWatcherToList, getListById} from './controller/liste-controller';
 import { Connection, getConnection } from 'typeorm';
 
 export const socketInit = (socket: socketIo.Socket) => {
@@ -24,11 +17,12 @@ export const socketInit = (socket: socketIo.Socket) => {
 	socket.on('get-profile', (data) => getProfile(data, socket));
 	socket.on('create-list', (data) => requireAuth(data, socket, 'create-list', createList));
 	socket.on('add-user-to-list', (data) => requireAuth(data, socket, 'add-user-to-list', addUserToList));
+	socket.on('add-watcher-to-list', (data) => requireAuth(data, socket, 'add-watcher-to-list', addWatcherToList));
 	socket.on('add-item-to-list', (data) => requireAuth(data, socket, 'add-item-to-list', addItemToList));
 	socket.on('get-all-list', (data) => requireAuth(data, socket, 'get-all-list', getAllList));
 	socket.on('delete-list', (data) => requireAuth(data, socket, 'delete-list', deleteList));
 	socket.on('disconnect', () => console.log('Client disconnected'));
-    socket.on('get-list-bid', (data) => requireAuth(data, socket, 'get-list-bid', getListById));
+	socket.on('get-list-bid', (data) => requireAuth(data, socket, 'get-list-bid', getListById));
 
 }
 

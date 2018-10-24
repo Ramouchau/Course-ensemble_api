@@ -27,4 +27,8 @@ export class List {
     @JoinTable()
     users: User[];
 
+    @ManyToMany(type => User, user => user.watcher_list, {cascade: true})
+    @JoinTable()
+    watchers: User[];
+
 }

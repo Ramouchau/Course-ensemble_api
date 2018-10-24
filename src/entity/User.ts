@@ -29,4 +29,7 @@ export class User {
 
 	@ManyToMany(type => List, list => list.users)
 	users_list: List[];
+
+	@ManyToMany(type => List, list => list.watchers)
+	watcher_list: List[];
 }

@@ -47,12 +47,11 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
     const connection: Connection = getConnection();
     let response: GetListResponce = { code: 200, status: "ok" }
     let listRep = await connection.getRepository(List)
-		let list = await listRep.findOne(data.idList, { relations: ["owner"]});
+    let list = await listRep.findOne(data.idList, { relations: ["owner"]});
     if (list.owner.id !== user.id) {
         response.code = 403;
         response.status = "User is not the list owner";
-    } else
-        await listRep.remove(list);
+    }
     let clientlist: ClientList = { id: list.id, name: list.name, items: list.items};
     response.list = clientlist;
 

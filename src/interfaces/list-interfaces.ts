@@ -19,13 +19,14 @@ export interface GetAllListResponce {
 }
 
 export interface GetListRequest {
-  idList: number;
+  token: string
+	idList: number
 }
 
 export interface GetListResponce {
-  status: string;
-  code: number;
-  list: ClientList;
+	status: string
+	code: number
+	list?: ClientList
 }
 
 export interface CreateListRequest {

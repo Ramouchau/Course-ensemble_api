@@ -18,8 +18,11 @@ import {
   DeleteListResponse,
   DeleteListRequest,
   addWatcherToListRequest,
-  addWatcherToListResponce
+	addWatcherToListResponce,
+	GetListResponce,
+	GetListRequest
 } from "../interfaces/list-interfaces";
+
 
 // get-all-list
 export async function getAllList(
@@ -37,6 +40,24 @@ export async function getAllList(
   });
 
   socket.emit("get-all-list", response);
+}
+
+
+// get-list-bid
+export async function getListById(user: User, data: GetListRequest, socket: Socket) {
+    const connection: Connection = getConnection();
+    let response: GetListResponce = { code: 200, status: "ok" };
+    let listRep = await connection.getRepository(List);
+    let list = await listRep.findOne(data.idList);
+    if (list.owner !== user) {
+        response.code = 403;
+        response.status = "User is not the list owner";
+    } else
+        await listRep.remove(list);
+    let clientlist: ClientList = { id: list.id, name: list.name, items: list.items};
+    response.list = clientlist;
+
+    socket.emit('get-list-bid', response);
 }
 
 // create-list
@@ -186,31 +207,28 @@ export async function addItemToList(
 }
 
 // update-item
-export async function updateItem(
-  user: User,
-  data: updateItemRequest,
-  socket: Socket
-) {
-  const connection: Connection = getConnection();
-  let response: updateItemResponce = { code: 200, status: "ok" };
-  let itemRep = await connection.getRepository(Item);
-  let item = await itemRep.findOne(data.idItem);
+export async function updateItem(user: User, data: updateItemRequest, socket: Socket) {
+	const connection: Connection = getConnection();
+	let response: updateItemResponce = { code: 200, status: "ok" };
+	let itemRep = await connection.getRepository(Item);
+	let item = await itemRep.findOne(data.idItem);
 
-  if (!item) {
-    response.code = 404;
-    response.status = "not found";
-    socket.emit("update-item", response);
-    return;
-  } else if (item.list.users.indexOf(user) == -1 && item.list.owner != user) {
-    response.code = 401;
-    response.status = "unauthorized";
-    socket.emit("update-item", response);
-    return;
-  }
+	if (!item) {
+		response.code = 404;
+		response.status = "not found";
+		socket.emit('update-item', response);
+		return;
+	}
+	else if (item.list.users.indexOf(user) == -1 && item.list.owner != user) {
+		response.code = 401;
+		response.status = "unauthorized";
+		socket.emit('update-item', response);
+		return;
+	}
 
-  item.name = data.item.name;
-  item.quantity = data.item.quantity;
-  item.status = data.item.status;
-  await itemRep.save(item);
-  socket.emit("update-item", response);
+	item.name = data.item.name;
+	item.quantity = data.item.quantity;
+	item.status = data.item.status;
+	await itemRep.save(item);
+	socket.emit('update-item', response);
 }

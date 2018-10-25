@@ -43,7 +43,7 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
     const connection: Connection = getConnection()
     let response: GetListResponce = { code: 200, status: "ok" }
     let listRep = await connection.getRepository(List)
-    let list = await listRep.findOne(data.idList, { relations: ["owner"]})
+    let list = await listRep.findOne(data.idList, { relations: ["owner", "items"]})
     if (list.owner.id !== user.id) {
         response.code = 403
         response.status = "User is not the list owner"
@@ -152,7 +152,7 @@ export async function addWatcherToList(user: User, data: addWatcherToListRequest
 // add-item-to-list
 export async function addItemToList(user: User, data: addItemToListRequest, socket: Socket) {
   const connection: Connection = getConnection()
-  let response: addItemToListResponce = { code: 200, status: "ok" }
+  let response: addItemToListResponce = { code: 200, status: "ok", list:[]}
   let listRep = await connection.getRepository(List)
   let itemRep = await connection.getRepository(Item)
   let list = await listRep.findOne(data.idList)
@@ -175,8 +175,11 @@ export async function addItemToList(user: User, data: addItemToListRequest, sock
   item.quantity = data.item.quantity
   item.status = data.item.status
   item.addBy = user
-  item.list = list
-  await itemRep.save(item)
+  item.list = list;
+  list.items.push(item);
+  await itemRep.save(item);
+  await listRep.save(list);
+  response.list.push(list);
   socket.emit("add-item-to-list", response)
 }
 

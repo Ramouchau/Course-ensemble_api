@@ -74,6 +74,7 @@ export interface addWatcherToListResponce {
 }
 
 export interface addItemToListRequest {
+  token: string;
   idList: number;
   item: ClientItem;
 }
@@ -81,6 +82,7 @@ export interface addItemToListRequest {
 export interface addItemToListResponce {
   status: string;
   code: number;
+  list: ClientItem[];
 }
 
 export interface updateItemRequest {

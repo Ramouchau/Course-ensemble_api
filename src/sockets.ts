@@ -6,7 +6,7 @@ import { UserToken } from './interfaces/auth-interfaces';
 import { User } from './entity/User';
 import { userRegister, userLogin, getUser } from './controller/auth-controller'
 import { getProfile } from './controller/profile-controller'
-import { createList, addUserToList, addItemToList, getAllList, deleteList, addWatcherToList, getListById} from './controller/liste-controller';
+import { createList, addUserToList, addItemToList, getAllList, deleteList, addWatcherToList, getListById } from './controller/liste-controller';
 import { Connection, getConnection } from 'typeorm';
 
 export const socketInit = (socket: socketIo.Socket) => {
@@ -30,22 +30,29 @@ const requireAuth = <T>(data: any, socket: socketIo.Socket, resRoute: string, fu
 	const connection: Connection = getConnection();
 	let response = { code: 200, status: "ok" };
 
+	if (!data) {
+		response.code = 400
+		response.status = "ko"
+		socket.emit(resRoute, response)
+		return
+	}
+
 	jwt.verify(data.token, '©oÜΓŠ', async (err, res: UserToken) => {
 		if (err) {
-			response.code = 401;
-			response.status = "unauthorized";
-			socket.emit(resRoute, response);
-			return;
+			response.code = 401
+			response.status = "unauthorized"
+			socket.emit(resRoute, response)
+			return
 		}
 
-		const user = await connection.getRepository(User).findOne(res.id, {relations: ["owner_list", "users_list", "watcher_list"]});
+		const user = await connection.getRepository(User).findOne(res.id, { relations: ["owner_list", "users_list", "watcher_list"] });
 		if (!user) {
 			response.code = 404
 			response.status = "ko"
-			socket.emit(resRoute, response);
-			return;
+			socket.emit(resRoute, response)
+			return
 		}
 
-		func(user, data, socket);
+		func(user, data, socket)
 	})
 }

@@ -155,27 +155,33 @@ export async function addItemToList(user: User, data: addItemToListRequest, sock
   let response: addItemToListResponce = { code: 200, status: "ok", list:[]}
   let listRep = await connection.getRepository(List)
   let itemRep = await connection.getRepository(Item)
-  let list = await listRep.findOne(data.idList)
-
+    let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "users"]})
+  console.log("additemlist")
+    console.log(list);
   if (!list) {
     response.code = 404
     response.status = "not found"
     socket.emit("add-item-to-list", response)
     return
-  } else if (list.users.indexOf(user) == -1 && list.owner != user) {
+  } else if (list.users.indexOf(user) == -1 && list.owner.id != user.id) {
     response.code = 401
     response.status = "unauthorized"
     socket.emit("add-item-to-list", response)
     return
   }
-
+  console.log("ici");
   let item = new Item()
 
   item.name = data.item.name
   item.quantity = data.item.quantity
   item.status = data.item.status
+    console.log("ici2");
   item.addBy = user
+    console.log("ic4");
   item.list = list;
+    console.log("ic3");
+  console.log(list);
+  console.log(item);
   list.items.push(item);
   await itemRep.save(item);
   await listRep.save(list);
@@ -206,6 +212,8 @@ export async function updateItem(user: User, data: updateItemRequest, socket: So
 	item.name = data.item.name
 	item.quantity = data.item.quantity
     item.status = data.item.status
+    response.status = "OK";
+	response
 	await itemRep.save(item)
 	socket.emit('update-item', response)
 }

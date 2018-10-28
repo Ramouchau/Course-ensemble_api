@@ -86,6 +86,7 @@ export interface addItemToListResponce {
 }
 
 export interface updateItemRequest {
+  token: string;
   idItem: number;
   item: ClientItem;
 }

@@ -186,15 +186,14 @@ export async function updateItem(user: User, data: updateItemRequest, socket: So
 	const connection: Connection = getConnection()
 	let response: updateItemResponce = { code: 200, status: "ok" }
 	let itemRep = await connection.getRepository(Item)
-	let item = await itemRep.findOne(data.idItem)
-
-	if (!item) {
+	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"]})
+    if (!item) {
 		response.code = 404
 		response.status = "not found"
 		socket.emit('update-item', response)
 		return
 	}
-	else if (item.list.users.indexOf(user) == -1 && item.list.owner != user) {
+	else if (item.list.users.indexOf(user) == -1 && item.list.owner.id != user.id) {
 		response.code = 401
 		response.status = "unauthorized"
 		socket.emit('update-item', response)

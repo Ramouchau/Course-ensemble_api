@@ -14,7 +14,8 @@ import {
     deleteList,
     addWatcherToList,
     getListById,
-    updateItem
+    updateItem,
+		deleteItem
 } from './controller/liste-controller';
 import { Connection, getConnection } from 'typeorm';
 
@@ -33,6 +34,7 @@ export const socketInit = (socket: socketIo.Socket) => {
 	socket.on('delete-list', (data) => requireAuth(data, socket, 'delete-list', deleteList));
 	socket.on('disconnect', () => console.log('Client disconnected'));
 	socket.on('get-list-bid', (data) => requireAuth(data, socket, 'get-list-bid', getListById));
+	socket.on('delete-item', (data) => requireAuth(data, socket, 'delete-item', deleteItem));
 
 }
 

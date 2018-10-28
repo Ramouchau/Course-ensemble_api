@@ -21,7 +21,9 @@ import {
 	addWatcherToListResponce,
 	GetListResponce,
 	GetListRequest,
-	UpdateItem
+	UpdateItem,
+	DeleteItemRequest,
+	DeleteItemResponce
 } from "../interfaces/list-interfaces"
 
 // get-all-list
@@ -194,8 +196,8 @@ export async function updateItem(user: User, data: updateItemRequest, socket: So
 	const connection: Connection = getConnection()
 	let response: updateItemResponce = { code: 200, status: "ok" }
 	let itemRep = await connection.getRepository(Item)
-	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"]})
-    if (!item) {
+	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"] })
+	if (!item) {
 		response.code = 404
 		response.status = "not found"
 		socket.emit('update-item', response)
@@ -217,4 +219,28 @@ export async function updateItem(user: User, data: updateItemRequest, socket: So
 		socket.to(`list-${item.list.id}`).emit("update-item", updateItem)
 	});
 	socket.emit('update-item', response)
+}
+
+
+export async function deleteItem(user: User, data: DeleteItemRequest, socket: Socket) {
+	const connection: Connection = getConnection()
+	let response: DeleteItemResponce = { code: 200, status: "ok" }
+	let itemRep = await connection.getRepository(Item)
+	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"] })
+
+	if (!item) {
+		response.code = 404
+		response.status = "not found"
+		socket.emit('delete-item', response)
+		return
+	}
+	else if (item.list.users.indexOf(user) == -1 && item.list.owner.id != user.id) {
+		response.code = 401
+		response.status = "unauthorized"
+		socket.emit('delete-item', response)
+		return
+	}
+
+	await itemRep.delete(item)
+	socket.emit('delete-item', response)
 }

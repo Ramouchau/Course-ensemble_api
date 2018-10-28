@@ -96,6 +96,17 @@ export interface updateItemResponce {
   code: number;
 }
 
+export interface DeleteItemRequest {
+  token: string;
+  idItem: number;
+}
+
+export interface DeleteItemResponce {
+  status: string;
+  code: number;
+}
+
+
 export interface UpdateList {
 	list: ClientList
 }

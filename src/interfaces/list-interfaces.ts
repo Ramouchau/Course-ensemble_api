@@ -96,6 +96,15 @@ export interface updateItemResponce {
   code: number;
 }
 
+export interface UpdateList {
+	list: ClientList
+}
+
+export interface UpdateItem{
+	idItem: number
+	item: ClientItem
+}
+
 /*export interface updateItemStatusRequest {
 	idItem: number
 }

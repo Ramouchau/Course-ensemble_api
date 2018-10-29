@@ -4,26 +4,26 @@ import { List } from '../entity/List'
 import { User } from '../entity/User'
 import { Item } from '../entity/Item'
 import {
-	CreateListResponse,
-	CreateListRequest,
-	addUserToListRequest,
-	addUserToListResponce,
-	addItemToListRequest,
-	addItemToListResponce,
-	updateItemRequest,
-	updateItemResponce,
-	ClientList,
-	GetAllListResponce,
-	GetAllListRequest,
-	DeleteListResponse,
-	DeleteListRequest,
-	addWatcherToListRequest,
-	addWatcherToListResponce,
-	GetListResponce,
-	GetListRequest,
-	UpdateItem,
-	DeleteItemRequest,
-	DeleteItemResponce
+    CreateListResponse,
+    CreateListRequest,
+    addUserToListRequest,
+    addUserToListResponce,
+    addItemToListRequest,
+    addItemToListResponce,
+    updateItemRequest,
+    updateItemResponce,
+    ClientList,
+    GetAllListResponce,
+    GetAllListRequest,
+    DeleteListResponse,
+    DeleteListRequest,
+    addWatcherToListRequest,
+    addWatcherToListResponce,
+    GetListResponce,
+    GetListRequest,
+    UpdateItem,
+    DeleteItemRequest,
+    DeleteItemResponce, UpdateListRequest, UpdateListResponse, UpdateList
 } from "../interfaces/list-interfaces"
 
 // get-all-list
@@ -55,6 +55,37 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
 	response.list = clientlist
 
 	socket.emit('get-list-bid', response)
+}
+
+// update-list
+export async function updateList(user: User, data: UpdateListRequest, socket: Socket) {
+    const connection: Connection = getConnection()
+    let response: updateItemResponce = { code: 200, status: "ok" }
+    let listRep = await connection.getRepository(List)
+    let list = await listRep.findOne(data.idList, { relations: ["users", "owner"] })
+    if (!list) {
+        response.code = 404
+        response.status = "not found"
+        socket.emit('update-list', response)
+        return
+    }
+    else if (list.users.indexOf(user) == -1 && list.owner.id != user.id) {
+        response.code = 401
+        response.status = "unauthorized"
+        socket.emit('update-list', response)
+        return
+    }
+
+    list.name = data.list.name;
+    /*
+    TODO: Rajouter la liste des utilisateurs à l'update de la liste
+     */
+    response.status = "OK";
+    await listRep.save(list).then((itemSaved) => {
+        const updateList: UpdateList = { idList: itemSaved.id, list: data.list }
+        socket.to(`list-${list.id}`).emit("update-list", updateList)
+    });
+    socket.emit('update-item', response)
 }
 
 // create-list

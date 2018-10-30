@@ -24,12 +24,12 @@ export class User {
 
 	profilePicPath: string;
 
-	@OneToMany(type => List, list => list.owner)
+	@OneToMany(type => List, list => list.owner, {cascade: true})
 	owner_list: List[]
 
-	@ManyToMany(type => List, list => list.users)
+	@ManyToMany(type => List, list => list.users, {cascade: true})
 	users_list: List[];
 
-	@ManyToMany(type => List, list => list.watchers)
+	@ManyToMany(type => List, list => list.watchers, {cascade: true})
 	watcher_list: List[];
 }

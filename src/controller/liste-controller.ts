@@ -4,32 +4,35 @@ import { List } from '../entity/List'
 import { User } from '../entity/User'
 import { Item } from '../entity/Item'
 import {
-    CreateListResponse,
-    CreateListRequest,
-    AddUserToListRequest,
-    AddUserToListResponse,
-    AddItemToListRequest,
-    AddItemToListResponse,
-    UpdateItemRequest,
-    UpdateItemResponse,
-    ClientList,
-    GetAllListResponse,
-    GetAllListRequest,
-    DeleteListResponse,
-    DeleteListRequest,
-    AddWatcherToListRequest,
-    AddWatcherToListResponse,
-    GetListResponse,
-    GetListRequest,
-    UpdateItem,
-    DeleteItemRequest,
-    DeleteItemResponse,
-    UpdateListRequest,
-    UpdateListResponse,
-    UpdateList,
-		DelUserToListRequest
+	CreateListResponse,
+	CreateListRequest,
+	AddUserToListRequest,
+	AddUserToListResponse,
+	AddItemToListRequest,
+	AddItemToListResponse,
+	UpdateItemRequest,
+	UpdateItemResponse,
+	ClientList,
+	GetAllListResponse,
+	GetAllListRequest,
+	DeleteListResponse,
+	DeleteListRequest,
+	AddWatcherToListRequest,
+	AddWatcherToListResponse,
+	GetListResponse,
+	GetListRequest,
+	UpdateItem,
+	DeleteItemRequest,
+	DeleteItemResponse,
+	UpdateListRequest,
+	UpdateListResponse,
+	UpdateList,
+	DelUserToListRequest,
+	AddedToListe,
+	DeletedFromList
 } from "../interfaces/list-interfaces"
-import {UserToken} from "../interfaces/auth-interfaces";
+import { UserToken } from "../interfaces/auth-interfaces";
+import { clients } from '../config';
 
 // get-all-list
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
@@ -57,17 +60,15 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
 		response.status = "User is not the list owner"
 	}
 
-	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users:[], watchers:[]}
-    list.users.forEach((user) =>
-    {
-        let formatUser : UserToken = {id: user.id, email: user.email, username: user.username};
-        clientlist.users.push(formatUser)
-    });
-    list.watchers.forEach((user) =>
-    {
-        let formatUser : UserToken = {id: user.id, email: user.email, username: user.username};
-        clientlist.watchers.push(formatUser)
-    });
+	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users: [], watchers: [] }
+	list.users.forEach((user) => {
+		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
+		clientlist.users.push(formatUser)
+	});
+	list.watchers.forEach((user) => {
+		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
+		clientlist.watchers.push(formatUser)
+	});
 	response.list = clientlist
 
 	socket.emit('get-list-bid', response)
@@ -75,33 +76,33 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
 
 // update-list
 export async function updateList(user: User, data: UpdateListRequest, socket: Socket) {
-    const connection: Connection = getConnection()
-    let response: UpdateListResponse = { code: 200, status: "ok" }
-    let listRep = await connection.getRepository(List)
-    let list = await listRep.findOne(data.idList, { relations: ["users", "owner"] })
-    if (!list) {
-        response.code = 404
-        response.status = "not found"
-        socket.emit('update-list', response)
-        return
-    }
-    else if (list.users.indexOf(user) == -1 && list.owner.id != user.id) {
-        response.code = 401
-        response.status = "unauthorized"
-        socket.emit('update-list', response)
-        return
-    }
+	const connection: Connection = getConnection()
+	let response: UpdateListResponse = { code: 200, status: "ok" }
+	let listRep = await connection.getRepository(List)
+	let list = await listRep.findOne(data.idList, { relations: ["users", "owner"] })
+	if (!list) {
+		response.code = 404
+		response.status = "not found"
+		socket.emit('update-list', response)
+		return
+	}
+	else if (list.users.indexOf(user) == -1 && list.owner.id != user.id) {
+		response.code = 401
+		response.status = "unauthorized"
+		socket.emit('update-list', response)
+		return
+	}
 
-    list.name = data.list.name;
-    /*
-    TODO: Rajouter la liste des utilisateurs à l'update de la liste
-     */
-    response.status = "OK";
-    await listRep.save(list).then((itemSaved) => {
-        const updateList: UpdateList = { idList: itemSaved.id, list: data.list }
-        socket.to(`list-${list.id}`).emit("update-list", updateList)
-    });
-    socket.emit('update-item', response)
+	list.name = data.list.name;
+	/*
+	TODO: Rajouter la liste des utilisateurs à l'update de la liste
+	 */
+	response.status = "OK";
+	await listRep.save(list).then((itemSaved) => {
+		const updateList: UpdateList = { idList: itemSaved.id, list: data.list }
+		socket.to(`list-${list.id}`).emit("update-list", updateList)
+	});
+	socket.emit('update-item', response)
 }
 
 // create-list
@@ -140,86 +141,86 @@ export async function deleteList(user: User, data: DeleteListRequest, socket: So
 }
 // delete-user-to-list
 export async function deleteUserToList(user: User, data: DelUserToListRequest, socket: Socket) {
-    const connection: Connection = getConnection()
-    let response: AddUserToListResponse = { code: 200, status: "ok" }
-    let listRep = await connection.getRepository(List)
-    let list = await listRep.findOne(data.idList, { relations: ["owner", "users", "users.users_list"] })
+	const connection: Connection = getConnection()
+	let response: AddUserToListResponse = { code: 200, status: "ok" }
+	let listRep = await connection.getRepository(List)
+	let list = await listRep.findOne(data.idList, { relations: ["owner", "users", "users.users_list"] })
 	let userRep = await connection.getRepository(User);
-    let userToDel = await userRep.findOne(data.idUser, {relations: ["users_list"]})
+	let userToDel = await userRep.findOne(data.idUser, { relations: ["users_list"] })
 
-    if (!list || !userToDel) {
-        response.code = 404
-        response.status = "not found"
-        socket.emit("del-user-to-list", response)
-        return
-    } else if (list.owner.id != user.id) {
-        response.code = 401
-        response.status = "unauthorized"
-        socket.emit("del-user-to-list", response)
-        return
-    }
-    for(let index in list.users)
-	{
-		if (list.users[index].id == userToDel.id)
-		{
-            list.users.splice(parseInt(index), 1);
-            for(let index in userToDel.users_list) {
-                if (userToDel.users_list[index].id == list.id) {
-                    userToDel.users_list.splice(parseInt(index), 1);
-                }
-            }
-            await listRep.save(list)
-            await userRep.save(userToDel)
-            socket.emit("del-user-to-list", response)
+	if (!list || !userToDel) {
+		response.code = 404
+		response.status = "not found"
+		socket.emit("del-user-to-list", response)
+		return
+	} else if (list.owner.id != user.id) {
+		response.code = 401
+		response.status = "unauthorized"
+		socket.emit("del-user-to-list", response)
+		return
+	}
+	for (let index in list.users) {
+		if (list.users[index].id == userToDel.id) {
+			list.users.splice(parseInt(index), 1);
+			for (let index in userToDel.users_list) {
+				if (userToDel.users_list[index].id == list.id) {
+					userToDel.users_list.splice(parseInt(index), 1);
+				}
+			}
+			await listRep.save(list)
+			await userRep.save(userToDel)
+			socket.emit("del-user-to-list", response)
 			return;
 		}
 	}
 	response.code = 400
 	response.status = "user not in list"
 	socket.emit("del-user-to-list", response)
-	return;
+
+	const resList: DeletedFromList = { by: user.username, list: { id: list.id, name: list.name } }
+	socket.connected[clients[data.idUser]].emit("added-to", resList)
 }
 // delete-watcher-to-list
 export async function deleteWatcherToList(user: User, data: DelUserToListRequest, socket: Socket) {
-    const connection: Connection = getConnection()
-    let response: AddUserToListResponse = { code: 200, status: "ok" }
-    let listRep = await connection.getRepository(List)
-    let list = await listRep.findOne(data.idList, { relations: ["owner", "watchers"] })
-    let userRep = await connection.getRepository(User);
-    let userToDel = await userRep.findOne(data.idUser, {relations: ["watcher_list"]})
+	const connection: Connection = getConnection()
+	let response: AddUserToListResponse = { code: 200, status: "ok" }
+	let listRep = await connection.getRepository(List)
+	let list = await listRep.findOne(data.idList, { relations: ["owner", "watchers"] })
+	let userRep = await connection.getRepository(User);
+	let userToDel = await userRep.findOne(data.idUser, { relations: ["watcher_list"] })
 
-    if (!list || !userToDel) {
-        response.code = 404
-        response.status = "not found"
-        socket.emit("del-watcher-to-list", response)
-        return
-    } else if (list.owner.id != user.id) {
-        response.code = 401
-        response.status = "unauthorized"
-        socket.emit("del-watcher-to-list", response)
-        return
-    }
+	if (!list || !userToDel) {
+		response.code = 404
+		response.status = "not found"
+		socket.emit("del-watcher-to-list", response)
+		return
+	} else if (list.owner.id != user.id) {
+		response.code = 401
+		response.status = "unauthorized"
+		socket.emit("del-watcher-to-list", response)
+		return
+	}
 
-    for(let index in list.watchers)
-    {
-        if (list.watchers[index].id == userToDel.id)
-        {
-            list.watchers.splice(parseInt(index), 1);
-            for(let index in userToDel.watcher_list) {
-                if (userToDel.watcher_list[index].id == list.id) {
-                    userToDel.watcher_list.splice(parseInt(index), 1);
-                }
-            }
-            await listRep.save(list)
-            await userRep.save(userToDel)
-            socket.emit("del-watcher-to-list", response)
-            return;
-        }
-    }
-    response.code = 400
-    response.status = "user not in list"
-    socket.emit("del-watcher-to-list", response)
-    return;
+	for (let index in list.watchers) {
+		if (list.watchers[index].id == userToDel.id) {
+			list.watchers.splice(parseInt(index), 1);
+			for (let index in userToDel.watcher_list) {
+				if (userToDel.watcher_list[index].id == list.id) {
+					userToDel.watcher_list.splice(parseInt(index), 1);
+				}
+			}
+			await listRep.save(list)
+			await userRep.save(userToDel)
+			socket.emit("del-watcher-to-list", response)
+
+			const resList: DeletedFromList = { by: user.username, list: { id: list.id, name: list.name } }
+			socket.connected[clients[data.idUser]].emit("added-to", resList)
+		}
+	}
+	response.code = 400
+	response.status = "user not in list"
+	socket.emit("del-watcher-to-list", response)
+	return;
 }
 // add-user-to-list
 export async function addUserToList(user: User, data: AddUserToListRequest, socket: Socket) {
@@ -249,8 +250,11 @@ export async function addUserToList(user: User, data: AddUserToListRequest, sock
 	}
 	list.users.push(userToAdd)
 	await listRep.save(list)
-    console.log(list);
+	console.log(list);
 	socket.emit("add-user-to-list", response)
+
+	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name } }
+	socket.connected[clients[data.idUser]].emit("added-to", resList)
 }
 
 // add-watcher-to-list
@@ -283,6 +287,9 @@ export async function addWatcherToList(user: User, data: AddWatcherToListRequest
 	list.watchers.push(userToAdd)
 	await listRep.save(list)
 	socket.emit("add-watcher-to-list", response)
+
+	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name } }
+	socket.connected[clients[data.idUser]].emit("added-to", resList)
 }
 
 // add-item-to-list

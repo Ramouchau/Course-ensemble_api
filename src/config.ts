@@ -1,0 +1,1 @@
+export let clients: { [id: number]: string } = []

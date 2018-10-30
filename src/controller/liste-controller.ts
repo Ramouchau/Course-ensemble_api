@@ -29,6 +29,7 @@ import {
 	UpdateList,
 	DelUserToListRequest,
 	AddedToListe,
+  ClientItem,
 	DeletedFromList
 } from "../interfaces/list-interfaces"
 import { UserToken } from "../interfaces/auth-interfaces";
@@ -51,26 +52,37 @@ export async function getAllList(user: User, data: GetAllListRequest, socket: So
 
 // get-list-bid
 export async function getListById(user: User, data: GetListRequest, socket: Socket) {
-	const connection: Connection = getConnection()
-	let response: GetListResponse = { code: 200, status: "ok" }
-	let listRep = await connection.getRepository(List)
-	let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "users", "watchers"] })
-	if (list.owner.id !== user.id) {
-		response.code = 403
-		response.status = "User is not the list owner"
-	}
+  const connection: Connection = getConnection()
+  let response: GetListResponse = { code: 200, status: "ok" }
+  let listRep = await connection.getRepository(List)
+  let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "items.addBy", "users", "watchers"] })
+  if (list.owner.id !== user.id) {
+    response.code = 403
+    response.status = "User is not the list owner"
+  }
 
-	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users: [], watchers: [] }
-	list.users.forEach((user) => {
-		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
-		clientlist.users.push(formatUser)
-	});
-	list.watchers.forEach((user) => {
-		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
-		clientlist.watchers.push(formatUser)
-	});
+  let owner: UserToken = {id: list.owner.id, username: list.owner.username, email: list.owner.email};
+  let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users:[], watchers:[], owner: owner}
+    list.users.forEach((user) =>
+    {
+        let formatUser : UserToken = {id: user.id, email: user.email, username: user.username};
+        clientlist.users.push(formatUser)
+    });
+    list.watchers.forEach((user) =>
+    {
+        let formatUser : UserToken = {id: user.id, email: user.email, username: user.username};
+        clientlist.watchers.push(formatUser)
+    });
+    let formatItems: ClientItem[] = [];
+    list.items.forEach((item) => {
+        let formatItem : ClientItem = {id: item.id, quantity: item.quantity, status: item.status, name: item.name}
+        let addByUser : UserToken = {id: item.addBy.id, email: item.addBy.email, username: item.addBy.username};
+        formatItem.addBy = addByUser;
+        formatItems.push(formatItem);
+    });
+    clientlist.items = formatItems;
 	response.list = clientlist
-
+	console.log(clientlist);
 	socket.emit('get-list-bid', response)
 }
 

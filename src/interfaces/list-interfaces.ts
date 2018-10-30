@@ -1,17 +1,20 @@
 import { UserToken } from "./auth-interfaces";
 
 export interface ClientItem {
-	name: string;
-	quantity?: string;
-	status?: number;
+  id: number;
+  name: string;
+  quantity?: string;
+  status?: number;
+  addBy?: UserToken;
 }
 
 export interface ClientList {
-	id: number;
-	name: string;
-	items?: ClientItem[];
-	users?: UserToken[]
-	watchers?: UserToken[]
+  id: number;
+  name: string;
+  items?: ClientItem[];
+  users?: UserToken[]
+  watchers?: UserToken[];
+  owner?: UserToken;
 }
 
 export interface GetAllListRequest {

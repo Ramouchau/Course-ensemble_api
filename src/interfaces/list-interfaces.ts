@@ -1,9 +1,11 @@
 import {UserToken} from "./auth-interfaces";
 
 export interface ClientItem {
+  id: number;
   name: string;
   quantity?: string;
   status?: number;
+  addBy?: UserToken;
 }
 
 export interface ClientList {
@@ -11,7 +13,8 @@ export interface ClientList {
   name: string;
   items?: ClientItem[];
   users?: UserToken[]
-  watchers?: UserToken[]
+  watchers?: UserToken[];
+  owner?: UserToken;
 }
 
 export interface GetAllListRequest {

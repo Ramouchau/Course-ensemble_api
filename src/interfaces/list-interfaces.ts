@@ -18,7 +18,7 @@ export interface GetAllListRequest {
 	token: string
 }
 
-export interface GetAllListResponce {
+export interface GetAllListResponse {
   status: string;
   code: number;
   lists?: ClientList[];
@@ -29,7 +29,7 @@ export interface GetListRequest {
 	idList: number
 }
 
-export interface GetListResponce {
+export interface GetListResponse {
 	status: string
 	code: number
 	list?: ClientList
@@ -63,7 +63,7 @@ export interface AddUserToListRequest {
   idUser: number;
 }
 
-export interface AddUserToListResponce {
+export interface AddUserToListResponse {
   status: string;
   code: number;
 }
@@ -74,7 +74,7 @@ export interface AddWatcherToListRequest {
   idUser: number;
 }
 
-export interface AddWatcherToListResponce {
+export interface AddWatcherToListResponse {
   status: string;
   code: number;
 }
@@ -86,7 +86,7 @@ export interface DelUserToListRequest {
     idUser: number;
 }
 
-export interface DelUserToListResponce {
+export interface DelUserToListResponse {
     status: string;
     code: number;
 }
@@ -97,7 +97,7 @@ export interface DelWatcherToListRequest {
     idUser: number;
 }
 
-export interface DelWatcherToListResponce {
+export interface DelWatcherToListResponse {
     status: string;
     code: number;
 }
@@ -108,7 +108,7 @@ export interface AddItemToListRequest {
   item: ClientItem;
 }
 
-export interface AddItemToListResponce {
+export interface AddItemToListResponse {
   status: string;
   code: number;
   list: ClientItem[];
@@ -120,7 +120,7 @@ export interface UpdateItemRequest {
   item: ClientItem;
 }
 
-export interface UpdateItemResponce {
+export interface UpdateItemResponse {
   status: string;
   code: number;
 }
@@ -130,7 +130,7 @@ export interface SearchUserRequest {
     research: string;
 }
 
-export interface SearchUserResponce {
+export interface SearchUserResponse {
     status: string;
     code: number;
     users?: UserToken[];
@@ -141,7 +141,7 @@ export interface DeleteItemRequest {
   idItem: number;
 }
 
-export interface DeleteItemResponce {
+export interface DeleteItemResponse {
   status: string;
   code: number;
 }

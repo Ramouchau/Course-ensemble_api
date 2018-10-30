@@ -7,23 +7,23 @@ import {
     CreateListResponse,
     CreateListRequest,
     AddUserToListRequest,
-    AddUserToListResponce,
+    AddUserToListResponse,
     AddItemToListRequest,
-    AddItemToListResponce,
+    AddItemToListResponse,
     UpdateItemRequest,
-    UpdateItemResponce,
+    UpdateItemResponse,
     ClientList,
-    GetAllListResponce,
+    GetAllListResponse,
     GetAllListRequest,
     DeleteListResponse,
     DeleteListRequest,
     AddWatcherToListRequest,
-    AddWatcherToListResponce,
-    GetListResponce,
+    AddWatcherToListResponse,
+    GetListResponse,
     GetListRequest,
     UpdateItem,
     DeleteItemRequest,
-    DeleteItemResponce,
+    DeleteItemResponse,
     UpdateListRequest,
     UpdateListResponse,
     UpdateList,
@@ -33,7 +33,7 @@ import {UserToken} from "../interfaces/auth-interfaces";
 
 // get-all-list
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
-	let response: GetAllListResponce = { code: 200, status: "ok" }
+	let response: GetAllListResponse = { code: 200, status: "ok" }
 	let userLists = user.owner_list.concat(user.users_list)
 
 	response.lists = userLists.map(list => {
@@ -49,7 +49,7 @@ export async function getAllList(user: User, data: GetAllListRequest, socket: So
 // get-list-bid
 export async function getListById(user: User, data: GetListRequest, socket: Socket) {
 	const connection: Connection = getConnection()
-	let response: GetListResponce = { code: 200, status: "ok" }
+	let response: GetListResponse = { code: 200, status: "ok" }
 	let listRep = await connection.getRepository(List)
 	let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "users", "watchers"] })
 	if (list.owner.id !== user.id) {
@@ -141,7 +141,7 @@ export async function deleteList(user: User, data: DeleteListRequest, socket: So
 // delete-user-to-list
 export async function deleteUserToList(user: User, data: DelUserToListRequest, socket: Socket) {
     const connection: Connection = getConnection()
-    let response: AddUserToListResponce = { code: 200, status: "ok" }
+    let response: AddUserToListResponse = { code: 200, status: "ok" }
     let listRep = await connection.getRepository(List)
     let list = await listRep.findOne(data.idList, { relations: ["owner", "users", "users.users_list"] })
 	let userRep = await connection.getRepository(User);
@@ -182,7 +182,7 @@ export async function deleteUserToList(user: User, data: DelUserToListRequest, s
 // delete-watcher-to-list
 export async function deleteWatcherToList(user: User, data: DelUserToListRequest, socket: Socket) {
     const connection: Connection = getConnection()
-    let response: AddUserToListResponce = { code: 200, status: "ok" }
+    let response: AddUserToListResponse = { code: 200, status: "ok" }
     let listRep = await connection.getRepository(List)
     let list = await listRep.findOne(data.idList, { relations: ["owner", "watchers"] })
     let userRep = await connection.getRepository(User);
@@ -224,7 +224,7 @@ export async function deleteWatcherToList(user: User, data: DelUserToListRequest
 // add-user-to-list
 export async function addUserToList(user: User, data: AddUserToListRequest, socket: Socket) {
 	const connection: Connection = getConnection()
-	let response: AddUserToListResponce = { code: 200, status: "ok" }
+	let response: AddUserToListResponse = { code: 200, status: "ok" }
 	let listRep = await connection.getRepository(List)
 	let list = await listRep.findOne(data.idList, { relations: ["owner", "users"] })
 	let userToAdd = await connection.getRepository(User).findOne(data.idUser)
@@ -256,7 +256,7 @@ export async function addUserToList(user: User, data: AddUserToListRequest, sock
 // add-watcher-to-list
 export async function addWatcherToList(user: User, data: AddWatcherToListRequest, socket: Socket) {
 	const connection: Connection = getConnection()
-	let response: AddWatcherToListResponce = { code: 200, status: "ok" }
+	let response: AddWatcherToListResponse = { code: 200, status: "ok" }
 	let listRep = await connection.getRepository(List)
 	let list = await listRep.findOne(data.idList, { relations: ["owner", "watchers", "users"] })
 	let userToAdd = await connection.getRepository(User).findOne(data.idUser)
@@ -288,7 +288,7 @@ export async function addWatcherToList(user: User, data: AddWatcherToListRequest
 // add-item-to-list
 export async function addItemToList(user: User, data: AddItemToListRequest, socket: Socket) {
 	const connection: Connection = getConnection()
-	let response: AddItemToListResponce = { code: 200, status: "ok", list: [] }
+	let response: AddItemToListResponse = { code: 200, status: "ok", list: [] }
 	let listRep = await connection.getRepository(List)
 	let itemRep = await connection.getRepository(Item)
 	let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "users"] })
@@ -323,7 +323,7 @@ export async function addItemToList(user: User, data: AddItemToListRequest, sock
 // update-item
 export async function updateItem(user: User, data: UpdateItemRequest, socket: Socket) {
 	const connection: Connection = getConnection()
-	let response: UpdateItemResponce = { code: 200, status: "ok" }
+	let response: UpdateItemResponse = { code: 200, status: "ok" }
 	let itemRep = await connection.getRepository(Item)
 	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"] })
 	if (!item) {
@@ -353,7 +353,7 @@ export async function updateItem(user: User, data: UpdateItemRequest, socket: So
 
 export async function deleteItem(user: User, data: DeleteItemRequest, socket: Socket) {
 	const connection: Connection = getConnection()
-	let response: DeleteItemResponce = { code: 200, status: "ok" }
+	let response: DeleteItemResponse = { code: 200, status: "ok" }
 	let itemRep = await connection.getRepository(Item)
 	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"] })
 

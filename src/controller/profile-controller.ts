@@ -6,10 +6,10 @@ import { UserToken } from '../interfaces/auth-interfaces';
 import { GetProfileRequest, GetProfileResponse } from '../interfaces/profile-interfaces';
 import {
     SearchUserRequest,
-    SearchUserResponce,
+    SearchUserResponse,
     UpdateItem,
     UpdateItemRequest,
-    UpdateItemResponce
+    UpdateItemResponse
 } from "../interfaces/list-interfaces";
 import {Item} from "../entity/Item";
 
@@ -39,7 +39,7 @@ export async function getProfile(data: GetProfileRequest, socket: Socket) {
 
 export async function searchUser(user: User, data: SearchUserRequest, socket: Socket) {
     const connection: Connection = getConnection()
-    let response: SearchUserResponce = { code: 200, status: "ok", users: []}
+    let response: SearchUserResponse = { code: 200, status: "ok", users: []}
     let userRep = await connection.getRepository(User)
     let users = await userRep.find({email: Like("%" + data.research + "%")})
 	 users.forEach((user) =>

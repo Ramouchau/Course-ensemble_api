@@ -147,10 +147,19 @@ export interface DeleteItemResponce {
 }
 
 
-export interface UpdateList {
+export interface UpdateListRequest {
+    token: string;
+    idList: number;
 	list: ClientList
 }
-
+export interface UpdateListResponse {
+    status: string;
+    code: number;
+}
+export interface UpdateList{
+    idList: number
+    list: ClientList
+}
 export interface UpdateItem{
 	idItem: number
 	item: ClientItem

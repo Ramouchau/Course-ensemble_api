@@ -21,7 +21,7 @@ export interface GetAllListRequest {
 	token: string
 }
 
-export interface GetAllListResponce {
+export interface GetAllListResponse {
   status: string;
   code: number;
   lists?: ClientList[];
@@ -32,7 +32,7 @@ export interface GetListRequest {
 	idList: number
 }
 
-export interface GetListResponce {
+export interface GetListResponse {
 	status: string
 	code: number
 	list?: ClientList
@@ -60,80 +60,80 @@ export interface DeleteListResponse {
   idList?: number;
 }
 
-export interface addUserToListRequest {
+export interface AddUserToListRequest {
   token: string;
   idList: number;
   idUser: number;
 }
 
-export interface addUserToListResponce {
+export interface AddUserToListResponse {
   status: string;
   code: number;
 }
 
-export interface addWatcherToListRequest {
+export interface AddWatcherToListRequest {
   token: string;
   idList: number;
   idUser: number;
 }
 
-export interface addWatcherToListResponce {
+export interface AddWatcherToListResponse {
   status: string;
   code: number;
 }
 
 
-export interface delUserToListRequest {
+export interface DelUserToListRequest {
     token: string;
     idList: number;
     idUser: number;
 }
 
-export interface delUserToListResponce {
+export interface DelUserToListResponse {
     status: string;
     code: number;
 }
 
-export interface delWatcherToListRequest {
+export interface DelWatcherToListRequest {
     token: string;
     idList: number;
     idUser: number;
 }
 
-export interface delWatcherToListResponce {
+export interface DelWatcherToListResponse {
     status: string;
     code: number;
 }
 
-export interface addItemToListRequest {
+export interface AddItemToListRequest {
   token: string;
   idList: number;
   item: ClientItem;
 }
 
-export interface addItemToListResponce {
+export interface AddItemToListResponse {
   status: string;
   code: number;
   list: ClientItem[];
 }
 
-export interface updateItemRequest {
+export interface UpdateItemRequest {
   token: string;
   idItem: number;
   item: ClientItem;
 }
 
-export interface updateItemResponce {
+export interface UpdateItemResponse {
   status: string;
   code: number;
 }
 
-export interface searchUserRequest {
+export interface SearchUserRequest {
     token: string;
     research: string;
 }
 
-export interface searchUserResponce {
+export interface SearchUserResponse {
     status: string;
     code: number;
     users?: UserToken[];
@@ -144,26 +144,26 @@ export interface DeleteItemRequest {
   idItem: number;
 }
 
-export interface DeleteItemResponce {
+export interface DeleteItemResponse {
   status: string;
   code: number;
 }
 
 
-export interface UpdateList {
+export interface UpdateListRequest {
+    token: string;
+    idList: number;
 	list: ClientList
 }
-
+export interface UpdateListResponse {
+    status: string;
+    code: number;
+}
+export interface UpdateList{
+    idList: number
+    list: ClientList
+}
 export interface UpdateItem{
 	idItem: number
 	item: ClientItem
 }
-
-/*export interface updateItemStatusRequest {
-	idItem: number
-}
-
-export interface updateItemstatusResponce {
-	status: string,
-	code: number
-}*/

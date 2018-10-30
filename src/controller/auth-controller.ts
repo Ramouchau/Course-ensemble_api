@@ -10,8 +10,7 @@ import {
 	UserLoginRequest,
 	UserLoginResponse,
 	GetUserRequest,
-	GetUserResponse,
-	UserToken
+	GetUserResponse
 } from "../interfaces/auth-interfaces";
 
 // Socket listener user-register

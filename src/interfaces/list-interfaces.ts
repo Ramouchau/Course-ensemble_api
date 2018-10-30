@@ -57,80 +57,80 @@ export interface DeleteListResponse {
   idList?: number;
 }
 
-export interface addUserToListRequest {
+export interface AddUserToListRequest {
   token: string;
   idList: number;
   idUser: number;
 }
 
-export interface addUserToListResponce {
+export interface AddUserToListResponce {
   status: string;
   code: number;
 }
 
-export interface addWatcherToListRequest {
+export interface AddWatcherToListRequest {
   token: string;
   idList: number;
   idUser: number;
 }
 
-export interface addWatcherToListResponce {
+export interface AddWatcherToListResponce {
   status: string;
   code: number;
 }
 
 
-export interface delUserToListRequest {
+export interface DelUserToListRequest {
     token: string;
     idList: number;
     idUser: number;
 }
 
-export interface delUserToListResponce {
+export interface DelUserToListResponce {
     status: string;
     code: number;
 }
 
-export interface delWatcherToListRequest {
+export interface DelWatcherToListRequest {
     token: string;
     idList: number;
     idUser: number;
 }
 
-export interface delWatcherToListResponce {
+export interface DelWatcherToListResponce {
     status: string;
     code: number;
 }
 
-export interface addItemToListRequest {
+export interface AddItemToListRequest {
   token: string;
   idList: number;
   item: ClientItem;
 }
 
-export interface addItemToListResponce {
+export interface AddItemToListResponce {
   status: string;
   code: number;
   list: ClientItem[];
 }
 
-export interface updateItemRequest {
+export interface UpdateItemRequest {
   token: string;
   idItem: number;
   item: ClientItem;
 }
 
-export interface updateItemResponce {
+export interface UpdateItemResponce {
   status: string;
   code: number;
 }
 
-export interface searchUserRequest {
+export interface SearchUserRequest {
     token: string;
     research: string;
 }
 
-export interface searchUserResponce {
+export interface SearchUserResponce {
     status: string;
     code: number;
     users?: UserToken[];
@@ -164,12 +164,3 @@ export interface UpdateItem{
 	idItem: number
 	item: ClientItem
 }
-
-/*export interface updateItemStatusRequest {
-	idItem: number
-}
-
-export interface updateItemstatusResponce {
-	status: string,
-	code: number
-}*/

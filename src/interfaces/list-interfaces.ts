@@ -1,3 +1,5 @@
+import {UserToken} from "./auth-interfaces";
+
 export interface ClientItem {
   name: string;
   quantity?: string;
@@ -8,6 +10,8 @@ export interface ClientList {
   id: number;
   name: string;
   items?: ClientItem[];
+  users?: UserToken[]
+  watchers?: UserToken[]
 }
 
 export interface GetAllListRequest {
@@ -54,6 +58,7 @@ export interface DeleteListResponse {
 }
 
 export interface addUserToListRequest {
+  token: string;
   idList: number;
   idUser: number;
 }
@@ -64,6 +69,7 @@ export interface addUserToListResponce {
 }
 
 export interface addWatcherToListRequest {
+  token: string;
   idList: number;
   idUser: number;
 }
@@ -71,6 +77,29 @@ export interface addWatcherToListRequest {
 export interface addWatcherToListResponce {
   status: string;
   code: number;
+}
+
+
+export interface delUserToListRequest {
+    token: string;
+    idList: number;
+    idUser: number;
+}
+
+export interface delUserToListResponce {
+    status: string;
+    code: number;
+}
+
+export interface delWatcherToListRequest {
+    token: string;
+    idList: number;
+    idUser: number;
+}
+
+export interface delWatcherToListResponce {
+    status: string;
+    code: number;
 }
 
 export interface addItemToListRequest {
@@ -94,6 +123,17 @@ export interface updateItemRequest {
 export interface updateItemResponce {
   status: string;
   code: number;
+}
+
+export interface searchUserRequest {
+    token: string;
+    research: string;
+}
+
+export interface searchUserResponce {
+    status: string;
+    code: number;
+    users?: UserToken[];
 }
 
 export interface DeleteItemRequest {

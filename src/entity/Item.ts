@@ -18,7 +18,7 @@ export class Item {
     list: List;
 
     @Column()
-    quantity: number;
+    quantity: string;
 
     @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)"})
     createAt: Date;

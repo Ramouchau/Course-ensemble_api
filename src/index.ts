@@ -7,6 +7,7 @@ import * as bodyParser from 'body-parser';
 import * as cookieparser from 'cookie-parser';
 import * as expressValidator from 'express-validator';
 import { socketInit } from './sockets';
+import { clients } from './config';
 
 createConnection();
 

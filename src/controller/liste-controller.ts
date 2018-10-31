@@ -302,6 +302,7 @@ export async function addWatcherToList(user: User, data: AddWatcherToListRequest
 
 // add-item-to-list
 export async function addItemToList(user: User, data: AddItemToListRequest, socket: Socket) {
+	console.log("this");
 	const connection: Connection = getConnection()
 	let response: AddItemToListResponse = { code: 200, status: "ok", list: [] }
 	let listRep = await connection.getRepository(List)
@@ -325,13 +326,10 @@ export async function addItemToList(user: User, data: AddItemToListRequest, sock
 	item.status = data.item.status
 	item.addBy = user
 	item.list = list;
-	list.items.push(item);
 	await itemRep.save(item).then((itemSaved) => {
 		const updateItem: UpdateItem = { idItem: itemSaved.id, item: data.item }
 		socket.to(`list-${list.id}`).emit("update-item", updateItem)
 	});
-	await listRep.save(list)
-	response.list.push(list)
 	socket.emit("add-item-to-list", response)
 }
 

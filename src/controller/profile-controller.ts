@@ -37,13 +37,13 @@ export async function getProfile(data: GetProfileRequest, socket: Socket) {
 	}
 }
 
-export async function searchUser(user: User, data: SearchUserRequest, socket: Socket) {
+export async function searchUser(getUser: User, data: SearchUserRequest, socket: Socket) {
 	const connection: Connection = getConnection()
 	let response: SearchUserResponse = { code: 200, status: "ok", users: [] }
 	let userRep = await connection.getRepository(User)
 	let users = await userRep.find({ email: Like("%" + data.research + "%") })
 	users.forEach((user) => {
-		if (user.id == this.user.id)
+		if (user.id == getUser.id)
 				return;
 		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
 		response.users.push(formatUser);

@@ -259,7 +259,7 @@ export async function addUserToList(user: User, data: AddUserToListRequest, sock
 	}
 	list.users.push(userToAdd)
 	await listRep.save(list)
-	//socket.emit("add-user-to-list", response)
+	socket.emit("add-user-to-list", response)
 
 	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name } }
 	io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)

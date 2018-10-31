@@ -43,6 +43,8 @@ export async function searchUser(user: User, data: SearchUserRequest, socket: So
 	let userRep = await connection.getRepository(User)
 	let users = await userRep.find({ email: Like("%" + data.research + "%") })
 	users.forEach((user) => {
+		if (user.id == this.user.id)
+				return;
 		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
 		response.users.push(formatUser);
 	});

@@ -356,6 +356,12 @@ export async function updateItem(user: User, data: UpdateItemRequest, socket: So
 	item.quantity = data.item.quantity
 	item.status = data.item.status
 	response.status = "OK";
+	let userItem: ClientItem = { id: item.id, name: item.name, quantity: item.quantity, status: item.status};
+	response.item = userItem;
+	let userToken: UserToken = { id: user.id, username: user.username, email: user.email };
+	response.user = userToken;
+	response.listName = item.list.name;
+		
 	await itemRep.save(item).then((itemSaved) => {
 		const updateItem: UpdateItem = { idItem: itemSaved.id, item: data.item }
 		socket.to(`list-${item.list.id}`).emit("update-item", updateItem)

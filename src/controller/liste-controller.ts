@@ -29,11 +29,11 @@ import {
 	UpdateList,
 	DelUserToListRequest,
 	AddedToListe,
-  ClientItem,
+	ClientItem,
 	DeletedFromList
 } from "../interfaces/list-interfaces"
 import { UserToken } from "../interfaces/auth-interfaces";
-import { clients } from '../config';
+import { io } from '../config';
 
 // get-all-list
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
@@ -52,37 +52,34 @@ export async function getAllList(user: User, data: GetAllListRequest, socket: So
 
 // get-list-bid
 export async function getListById(user: User, data: GetListRequest, socket: Socket) {
-  const connection: Connection = getConnection()
-  let response: GetListResponse = { code: 200, status: "ok" }
-  let listRep = await connection.getRepository(List)
-  let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "items.addBy", "users", "watchers"] })
-  if (list.owner.id !== user.id) {
-    response.code = 403
-    response.status = "User is not the list owner"
-  }
+	const connection: Connection = getConnection()
+	let response: GetListResponse = { code: 200, status: "ok" }
+	let listRep = await connection.getRepository(List)
+	let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "items.addBy", "users", "watchers"] })
+	if (list.owner.id !== user.id) {
+		response.code = 403
+		response.status = "User is not the list owner"
+	}
 
-  let owner: UserToken = {id: list.owner.id, username: list.owner.username, email: list.owner.email};
-  let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users:[], watchers:[], owner: owner}
-    list.users.forEach((user) =>
-    {
-        let formatUser : UserToken = {id: user.id, email: user.email, username: user.username};
-        clientlist.users.push(formatUser)
-    });
-    list.watchers.forEach((user) =>
-    {
-        let formatUser : UserToken = {id: user.id, email: user.email, username: user.username};
-        clientlist.watchers.push(formatUser)
-    });
-    let formatItems: ClientItem[] = [];
-    list.items.forEach((item) => {
-        let formatItem : ClientItem = {id: item.id, quantity: item.quantity, status: item.status, name: item.name}
-        let addByUser : UserToken = {id: item.addBy.id, email: item.addBy.email, username: item.addBy.username};
-        formatItem.addBy = addByUser;
-        formatItems.push(formatItem);
-    });
-    clientlist.items = formatItems;
+	let owner: UserToken = { id: list.owner.id, username: list.owner.username, email: list.owner.email };
+	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users: [], watchers: [], owner: owner };
+	list.users.forEach((user) => {
+		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
+		clientlist.users.push(formatUser)
+	});
+	list.watchers.forEach((user) => {
+		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
+		clientlist.watchers.push(formatUser)
+	});
+	let formatItems: ClientItem[] = [];
+	list.items.forEach((item) => {
+		let formatItem: ClientItem = { id: item.id, quantity: item.quantity, status: item.status, name: item.name }
+		let addByUser: UserToken = { id: item.addBy.id, email: item.addBy.email, username: item.addBy.username };
+		formatItem.addBy = addByUser;
+		formatItems.push(formatItem);
+	});
+	clientlist.items = formatItems;
 	response.list = clientlist
-	console.log(clientlist);
 	socket.emit('get-list-bid', response)
 }
 
@@ -190,7 +187,7 @@ export async function deleteUserToList(user: User, data: DelUserToListRequest, s
 	socket.emit("del-user-to-list", response)
 
 	const resList: DeletedFromList = { by: user.username, list: { id: list.id, name: list.name } }
-	socket.connected[clients[data.idUser]].emit("added-to", resList)
+	io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
 }
 // delete-watcher-to-list
 export async function deleteWatcherToList(user: User, data: DelUserToListRequest, socket: Socket) {
@@ -226,7 +223,7 @@ export async function deleteWatcherToList(user: User, data: DelUserToListRequest
 			socket.emit("del-watcher-to-list", response)
 
 			const resList: DeletedFromList = { by: user.username, list: { id: list.id, name: list.name } }
-			socket.connected[clients[data.idUser]].emit("added-to", resList)
+			io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
 		}
 	}
 	response.code = 400
@@ -262,11 +259,10 @@ export async function addUserToList(user: User, data: AddUserToListRequest, sock
 	}
 	list.users.push(userToAdd)
 	await listRep.save(list)
-	console.log(list);
-	socket.emit("add-user-to-list", response)
+	//socket.emit("add-user-to-list", response)
 
 	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name } }
-	socket.connected[clients[data.idUser]].emit("added-to", resList)
+	io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
 }
 
 // add-watcher-to-list
@@ -301,7 +297,7 @@ export async function addWatcherToList(user: User, data: AddWatcherToListRequest
 	socket.emit("add-watcher-to-list", response)
 
 	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name } }
-	socket.connected[clients[data.idUser]].emit("added-to", resList)
+	io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
 }
 
 // add-item-to-list

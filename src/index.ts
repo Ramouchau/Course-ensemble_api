@@ -7,7 +7,7 @@ import * as bodyParser from 'body-parser';
 import * as cookieparser from 'cookie-parser';
 import * as expressValidator from 'express-validator';
 import { socketInit } from './sockets';
-import { clients } from './config';
+import { io } from './config'
 
 createConnection();
 
@@ -29,14 +29,14 @@ app.use(cookieparser());
 })*/
 
 let server = createServer(app);
-let io = socketIo(server);
+io.server = socketIo(server);
 
 server.listen(port, () => {
 	console.log('Running server on port %s', port);
 	express.Router()
 });
 
-io.on('connect', (socket: socketIo.Socket) => {
+io.server.on('connect', (socket: socketIo.Socket) => {
 	console.log('Connected client %s.', socket.id);
 	socketInit(socket);
 });

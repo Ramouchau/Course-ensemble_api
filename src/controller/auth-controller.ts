@@ -12,7 +12,7 @@ import {
 	GetUserRequest,
 	GetUserResponse
 } from "../interfaces/auth-interfaces";
-import { clients } from "../config";
+import { io } from "../config";
 
 // Socket listener user-register
 export async function userRegister(data: UserRegisterRequest, socket: Socket) {
@@ -75,6 +75,6 @@ export async function userLogin(data: UserLoginRequest, socket: Socket) {
 export async function getUser(user: User, data: GetUserRequest, socket: Socket) {
 	let response: GetUserResponse = { code: 200, status: "ok" }
 	response.user = { email: user.email, username: user.username, id: user.id }
-	clients[user.id] = socket.id
+	io.clients[user.id] = socket.id
 	socket.emit('get-user', response)
 }

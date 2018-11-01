@@ -38,7 +38,7 @@ import { io } from '../config';
 // get-all-list
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
 	let response: GetAllListResponse = { code: 200, status: "ok" }
-	let userLists = user.owner_list.concat(user.users_list)
+	let userLists = user.owner_list.concat(user.users_list, user.watcher_list)
 
 	response.lists = userLists.map(list => {
 		socket.join(`list-${list.id}`)
@@ -60,6 +60,20 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
 		response.code = 403
 		response.status = "User is not the list owner"
 	}
+
+	list.watchers.forEach(element => {
+		if (element.id === user.id) {
+			response.code = 200
+			response.status = "ok"	
+		}
+	});
+
+	list.users.forEach(element => {
+		if (element.id === user.id) {
+			response.code = 200
+			response.status = "ok"	
+		}
+	});
 
 	let owner: UserToken = { id: list.owner.id, username: list.owner.username, email: list.owner.email };
 	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users: [], watchers: [], owner: owner };

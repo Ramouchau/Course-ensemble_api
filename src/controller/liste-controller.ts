@@ -39,7 +39,7 @@ import { io } from '../config';
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
 	let response: GetAllListResponse = { code: 200, status: "ok" }
 	let userLists = user.owner_list.concat(user.users_list, user.watcher_list)
-  
+
 	response.lists = userLists.map(list => {
 		console.log(list);
 		socket.join(`list-${list.id}`)
@@ -66,14 +66,14 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
 	list.watchers.forEach(element => {
 		if (element.id === user.id) {
 			response.code = 200
-			response.status = "ok"	
+			response.status = "ok"
 		}
 	});
 
 	list.users.forEach(element => {
 		if (element.id === user.id) {
 			response.code = 200
-			response.status = "ok"	
+			response.status = "ok"
 		}
 	});
 
@@ -151,11 +151,12 @@ export async function deleteList(user: User, data: DeleteListRequest, socket: So
 	const connection: Connection = getConnection()
 	let response: DeleteListResponse = { code: 200, status: "ok" }
 
-	let listRep = await connection.getRepository(List)
-	let list = await listRep.findOne(data.id)
-	if (list.owner !== user) {
+	let listRep = await connection.getRepository(List);
+	let list = await listRep.findOne(data.id, {relations: ["owner"]})
+	if (list.owner.id !== user.id) {
 		response.code = 403
 		response.status = "User is not the list owner"
+		return;
 	} else await listRep.remove(list)
 
 	// TODO : check if peoples on the list are unsubbed from the list or idk when deleted like does it bug or not
@@ -379,7 +380,7 @@ export async function updateItem(user: User, data: UpdateItemRequest, socket: So
 		response.item = userItem;
 		let userToken: UserToken = { id: user.id, username: user.username, email: user.email };
 		response.user = userToken;
-		response.listName = item.list.name;	
+		response.listName = item.list.name;
 		socket.to(`list-${item.list.id}`).emit("update-item", response)
 	});
 	socket.emit('update-item', response)

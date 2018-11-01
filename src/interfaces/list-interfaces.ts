@@ -129,6 +129,9 @@ export interface UpdateItemRequest {
 export interface UpdateItemResponse {
 	status: string;
 	code: number;
+	item?: ClientItem;
+	user?: UserToken;
+	listName?: string;
 }
 
 export interface SearchUserRequest {

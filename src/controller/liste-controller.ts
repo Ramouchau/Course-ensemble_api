@@ -38,7 +38,8 @@ import { io } from '../config';
 // get-all-list
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
 	let response: GetAllListResponse = { code: 200, status: "ok" }
-	let userLists = user.owner_list.concat(user.users_list)
+	let userLists = user.owner_list.concat(user.users_list, user.watcher_list)
+  
 	response.lists = userLists.map(list => {
 		console.log(list);
 		socket.join(`list-${list.id}`)
@@ -61,6 +62,20 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
 		response.code = 403
 		response.status = "User is not the list owner"
 	}
+
+	list.watchers.forEach(element => {
+		if (element.id === user.id) {
+			response.code = 200
+			response.status = "ok"	
+		}
+	});
+
+	list.users.forEach(element => {
+		if (element.id === user.id) {
+			response.code = 200
+			response.status = "ok"	
+		}
+	});
 
 	let owner: UserToken = { id: list.owner.id, username: list.owner.username, email: list.owner.email };
 	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users: [], watchers: [], owner: owner };
@@ -357,9 +372,15 @@ export async function updateItem(user: User, data: UpdateItemRequest, socket: So
 	item.quantity = data.item.quantity
 	item.status = data.item.status
 	response.status = "OK";
+
 	await itemRep.save(item).then((itemSaved) => {
-		const updateItem: UpdateItem = { idItem: itemSaved.id, item: data.item }
-		socket.to(`list-${item.list.id}`).emit("update-item", updateItem)
+		// const updateItem: UpdateItem = { idItem: itemSaved.id, item: data.item }
+		let userItem: ClientItem = { id: item.id, name: item.name, quantity: item.quantity, status: item.status};
+		response.item = userItem;
+		let userToken: UserToken = { id: user.id, username: user.username, email: user.email };
+		response.user = userToken;
+		response.listName = item.list.name;	
+		socket.to(`list-${item.list.id}`).emit("update-item", response)
 	});
 	socket.emit('update-item', response)
 }

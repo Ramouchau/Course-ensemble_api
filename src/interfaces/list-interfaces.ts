@@ -41,6 +41,15 @@ export interface GetListResponse {
 	list?: ClientList;
 }
 
+export interface deleteListRequest {
+    token: string;
+    idList: number;
+}
+
+export interface deleteListResponse {
+    status: string;
+    code: number;
+}
 export interface CreateListRequest {
 	token: string;
 	listName: string;

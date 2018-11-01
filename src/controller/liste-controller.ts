@@ -159,11 +159,12 @@ export async function deleteList(user: User, data: DeleteListRequest, socket: So
 	const connection: Connection = getConnection()
 	let response: DeleteListResponse = { code: 200, status: "ok" }
 
-	let listRep = await connection.getRepository(List)
-	let list = await listRep.findOne(data.id)
-	if (list.owner !== user) {
+	let listRep = await connection.getRepository(List);
+	let list = await listRep.findOne(data.id, {relations: ["owner"]})
+	if (list.owner.id !== user.id) {
 		response.code = 403
 		response.status = "User is not the list owner"
+		return;
 	} else await listRep.remove(list)
 
 	// TODO : check if peoples on the list are unsubbed from the list or idk when deleted like does it bug or not
@@ -389,8 +390,7 @@ export async function updateItem(user: User, data: UpdateItemRequest, socket: So
 		let userToken: UserToken = { id: user.id, username: user.username, email: user.email };
 		response.user = userToken;
 		response.listName = item.list.name;
-
-		let roomRes: ItemUpdated = {by: user.username, item: userItem}
+    let roomRes: ItemUpdated = {by: user.username, item: userItem}
 		socket.to(`list-${item.list.id}`).emit("item-updated", roomRes)
 	});
 	socket.emit('update-item', response)

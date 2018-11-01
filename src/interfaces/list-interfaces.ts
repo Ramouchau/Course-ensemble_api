@@ -15,6 +15,9 @@ export interface ClientList {
   users?: UserToken[]
   watchers?: UserToken[];
   owner?: UserToken;
+  nbItems?: number;
+  nbUsers?: number;
+  updateAt?: Date
 }
 
 export interface GetAllListRequest {

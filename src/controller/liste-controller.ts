@@ -39,10 +39,11 @@ import { io } from '../config';
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
 	let response: GetAllListResponse = { code: 200, status: "ok" }
 	let userLists = user.owner_list.concat(user.users_list)
-
 	response.lists = userLists.map(list => {
+		console.log(list);
 		socket.join(`list-${list.id}`)
-		let clientlist: ClientList = { id: list.id, name: list.name }
+		let owner: UserToken = {id: user.id, email: user.email, username: user.username};
+		let clientlist: ClientList = {owner: owner, id: list.id, name: list.name, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: list.users.length + list.watchers.length}
 		return clientlist
 	})
 

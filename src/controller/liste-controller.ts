@@ -136,7 +136,7 @@ export async function updateList(user: User, data: UpdateListRequest, socket: So
 	await listRep.save(list).then((itemSaved) => {
         let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
         const updateList: UpdateList = { by: user.username, idList: list.id, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
-        socket.to(`list-${list.id}`).emit("update-list", updateList)
+        socket.to(`list-${list.id}`).emit("updated-list", updateList)
         //io.server.sockets.connected[io.clients[user.id]].emit("update-list", updateList)
 	});
 	socket.emit('update-item', response)
@@ -368,7 +368,7 @@ export async function addItemToList(user: User, data: AddItemToListRequest, sock
 		socket.to(`list-${item.list.id}`).emit("item-added", roomRes)
         let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
         const updateList: UpdateList = { by: user.username, idList: list.id, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
-        socket.to(`list-${list.id}`).emit("update-list", updateList)
+        socket.to(`list-${list.id}`).emit("updated-list", updateList)
 	});
 	socket.emit("add-item-to-list", response)
 }
@@ -437,5 +437,5 @@ export async function deleteItem(user: User, data: DeleteItemRequest, socket: So
 	socket.to(`list-${item.list.id}`).emit("item-deleted", roomRes)
     let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
     const updateList: UpdateList = { by: user.username, idList: list.id, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
-    socket.to(`list-${item.list.id}`).emit("update-list", updateList)
+    socket.to(`list-${item.list.id}`).emit("updated-list", updateList)
 }

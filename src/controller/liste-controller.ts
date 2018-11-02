@@ -134,9 +134,10 @@ export async function updateList(user: User, data: UpdateListRequest, socket: So
 	 */
 	response.status = "OK";
 	await listRep.save(list).then((itemSaved) => {
-		const updateList: UpdateList = { by: user.username, idList: itemSaved.id, list: data.list }
-		//socket.to(`list-${list.id}`).emit("update-list", updateList)
-        io.server.sockets.connected[io.clients[user.id]].emit("update-list", updateList)
+        let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
+        const updateList: UpdateList = { by: user.username, idList: list.id, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
+        socket.to(`list-${list.id}`).emit("update-list", updateList)
+        //io.server.sockets.connected[io.clients[user.id]].emit("update-list", updateList)
 	});
 	socket.emit('update-item', response)
 }
@@ -330,8 +331,9 @@ export async function addWatcherToList(user: User, data: AddWatcherToListRequest
 	await listRep.save(list)
 	socket.emit("add-watcher-to-list", response)
 
-	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name } }
-	io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
+    let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
+    const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
+    io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
 }
 
 // add-item-to-list
@@ -364,6 +366,9 @@ export async function addItemToList(user: User, data: AddItemToListRequest, sock
 		resItem.id = itemSaved.id
 		let roomRes: ItemUpdated = {by: user.username, item: resItem}
 		socket.to(`list-${item.list.id}`).emit("item-added", roomRes)
+        let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
+        const updateList: UpdateList = { by: user.username, idList: list.id, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
+        socket.to(`list-${list.id}`).emit("update-list", updateList)
 	});
 	socket.emit("add-item-to-list", response)
 }
@@ -411,7 +416,7 @@ export async function deleteItem(user: User, data: DeleteItemRequest, socket: So
 	let response: DeleteItemResponse = { code: 200, status: "ok" }
 	let itemRep = await connection.getRepository(Item)
 	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"] })
-
+    let list = item.list;
 	if (!item) {
 		response.code = 404
 		response.status = "not found"
@@ -430,4 +435,7 @@ export async function deleteItem(user: User, data: DeleteItemRequest, socket: So
 
 	let roomRes: ItemUpdated = {by: user.username, item: item}
 	socket.to(`list-${item.list.id}`).emit("item-deleted", roomRes)
+    let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
+    const updateList: UpdateList = { by: user.username, idList: list.id, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
+    socket.to(`list-${item.list.id}`).emit("update-list", updateList)
 }

@@ -342,7 +342,7 @@ export async function addItemToList(user: User, data: AddItemToListRequest, sock
 	let response: AddItemToListResponse = { code: 200, status: "ok", list: [] }
 	let listRep = await connection.getRepository(List)
 	let itemRep = await connection.getRepository(Item)
-	let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "users"] })
+	let list = await listRep.findOne(data.idList, { relations: ["owner", "items", "users", "watchers"] })
 	if (!list) {
 		response.code = 404
 		response.status = "not found"
@@ -378,7 +378,7 @@ export async function updateItem(user: User, data: UpdateItemRequest, socket: So
 	const connection: Connection = getConnection()
 	let response: UpdateItemResponse = { code: 200, status: "ok" }
 	let itemRep = await connection.getRepository(Item)
-	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"] })
+	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner", "list.items"] })
 
 	if (!item) {
 		response.code = 404
@@ -415,7 +415,7 @@ export async function deleteItem(user: User, data: DeleteItemRequest, socket: So
 	const connection: Connection = getConnection()
 	let response: DeleteItemResponse = { code: 200, status: "ok" }
 	let itemRep = await connection.getRepository(Item)
-	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner"] })
+	let item = await itemRep.findOne(data.idItem, { relations: ["list", "list.users", "list.owner", "list.items", "list.watchers"] })
     let list = item.list;
 	if (!item) {
 		response.code = 404

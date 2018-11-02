@@ -54,6 +54,9 @@ export async function getAllList(user: User, data: GetAllListRequest, socket: So
 		}
 		return clientlist
 	})
+	response.lists = response.lists.sort((list1, list2) => {
+		return list1.updateAt > list2.updateAt ? -1 : 1;
+	})
 
 	socket.emit("get-all-list", response)
 }

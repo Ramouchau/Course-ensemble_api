@@ -135,7 +135,8 @@ export async function updateList(user: User, data: UpdateListRequest, socket: So
 	response.status = "OK";
 	await listRep.save(list).then((itemSaved) => {
 		const updateList: UpdateList = { by: user.username, idList: itemSaved.id, list: data.list }
-		socket.to(`list-${list.id}`).emit("update-list", updateList)
+		//socket.to(`list-${list.id}`).emit("update-list", updateList)
+        io.server.sockets.connected[io.clients[user.id]].emit("list-deleted", updateList)
 	});
 	socket.emit('update-item', response)
 }
@@ -293,7 +294,8 @@ export async function addUserToList(user: User, data: AddUserToListRequest, sock
 	await listRep.save(list)
 	socket.emit("add-user-to-list", response)
 
-	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name } }
+	let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
+	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items.length, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
 	io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
 }
 

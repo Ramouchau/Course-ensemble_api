@@ -175,6 +175,7 @@ export interface UpdateListResponse {
 	code: number;
 }
 export interface UpdateList {
+	by?: string;
 	idList: number;
 	list: ClientList;
 }

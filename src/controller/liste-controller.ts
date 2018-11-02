@@ -134,7 +134,7 @@ export async function updateList(user: User, data: UpdateListRequest, socket: So
 	 */
 	response.status = "OK";
 	await listRep.save(list).then((itemSaved) => {
-		const updateList: UpdateList = { idList: itemSaved.id, list: data.list }
+		const updateList: UpdateList = { by: user.username, idList: itemSaved.id, list: data.list }
 		socket.to(`list-${list.id}`).emit("update-list", updateList)
 	});
 	socket.emit('update-item', response)

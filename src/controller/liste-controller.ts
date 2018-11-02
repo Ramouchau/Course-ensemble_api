@@ -64,6 +64,7 @@ export async function getAllList(user: User, data: GetAllListRequest, socket: So
 
 // get-list-bid
 export async function getListById(user: User, data: GetListRequest, socket: Socket) {
+    io.clients[user.id] = socket.id
 	const connection: Connection = getConnection()
 	let response: GetListResponse = { code: 200, status: "ok" }
 	let listRep = await connection.getRepository(List)

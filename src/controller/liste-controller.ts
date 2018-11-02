@@ -136,7 +136,7 @@ export async function updateList(user: User, data: UpdateListRequest, socket: So
 	await listRep.save(list).then((itemSaved) => {
 		const updateList: UpdateList = { by: user.username, idList: itemSaved.id, list: data.list }
 		//socket.to(`list-${list.id}`).emit("update-list", updateList)
-        io.server.sockets.connected[io.clients[user.id]].emit("list-deleted", updateList)
+        io.server.sockets.connected[io.clients[user.id]].emit("update-list", updateList)
 	});
 	socket.emit('update-item', response)
 }

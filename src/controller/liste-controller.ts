@@ -297,6 +297,9 @@ export async function addUserToList(user: User, data: AddUserToListRequest, sock
 
 	let owner : UserToken = {id: list.owner.id, email: list.owner.email, username: list.owner.username}
 	const resList: AddedToListe = { by: user.username, list: { id: list.id, name: list.name, owner:owner, updateAt: list.updateAt, nbItems: list.items ? list.items.length : 0, nbUsers: (list.users ? list.users.length: 0) + (list.watchers ? list.watchers.length: 0)} }
+	console.log(data.idUser);
+	console.log(io.clients[data.idUser]);
+    console.log(io.server.sockets.connected[io.clients[data.idUser]]);
 	io.server.sockets.connected[io.clients[data.idUser]].emit("added-to", resList)
 }
 

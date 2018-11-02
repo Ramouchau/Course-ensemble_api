@@ -64,7 +64,7 @@ const requireAuth = <T>(data: any, socket: socketIo.Socket, resRoute: string, fu
 			return
 		}
 
-		const user = await connection.getRepository(User).findOne(res.id, { relations: ["owner_list", "owner_list.items", "owner_list.watchers" , "owner_list.users", "users_list", "watcher_list", "users_list.users", "watcher_list.users", "users_list.users", "watcher_list.users", "users_list.watchers", "watcher_list.watchers"] });
+		const user = await connection.getRepository(User).findOne(res.id, { relations: ["owner_list", "owner_list.items", "owner_list.watchers" , "owner_list.users", "users_list", "watcher_list", "users_list.items", "watcher_list.items", "users_list.users", "watcher_list.users", "users_list.watchers", "watcher_list.watchers"] });
 		if (!user) {
 			response.code = 404
 			response.status = "ko"

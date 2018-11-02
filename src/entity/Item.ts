@@ -14,7 +14,7 @@ export class Item {
     @ManyToOne(type => User, owner => owner.id)
     addBy: User;
 
-    @ManyToOne(type => List, list => list.items, {cascade: true})
+    @ManyToOne(type => List, list => list.items, {cascade: true, onDelete:'CASCADE'})
     list: List;
 
     @Column()

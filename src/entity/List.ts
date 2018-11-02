@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinTable} from "typeorm";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    OneToMany,
+    ManyToMany,
+    JoinTable,
+    UpdateDateColumn
+} from "typeorm";
 import {User} from "./User";
 import {Item} from "./Item";
 
@@ -14,13 +23,13 @@ export class List {
     @ManyToOne(type => User, owner => owner.owner_list, {cascade: true})
     owner: User;
 
-    @OneToMany(type => Item, item => item.list) // note: we will create author property in the Photo class below
+    @OneToMany(type => Item, item => item.list, {onDelete: "CASCADE"}) // note: we will create author property in the Photo class below
     items: Item[];
 
     @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)"})
     createAt: Date;
 
-    @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)", onUpdate: "CURRENT_TIMESTAMP(3)"})
+    @UpdateDateColumn()
     updateAt: Date;
 
     @ManyToMany(type => User, user => user.users_list, {cascade: true})

@@ -41,7 +41,6 @@ import { io } from '../config';
 export async function getAllList(user: User, data: GetAllListRequest, socket: Socket) {
 	let response: GetAllListResponse = { code: 200, status: "ok" }
 	let userLists = user.owner_list.concat(user.users_list, user.watcher_list)
-
 	response.lists = userLists.map(list => {
 		socket.join(`list-${list.id}`)
 		let owner: UserToken = { id: user.id, email: user.email, username: user.username };
@@ -86,7 +85,7 @@ export async function getListById(user: User, data: GetListRequest, socket: Sock
 	});
 
 	let owner: UserToken = { id: list.owner.id, username: list.owner.username, email: list.owner.email };
-	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users: [], watchers: [], owner: owner };
+	let clientlist: ClientList = { id: list.id, name: list.name, items: list.items, users: [], watchers: [], owner: owner, updateAt: list.updateAt};
 	list.users.forEach((user) => {
 		let formatUser: UserToken = { id: user.id, email: user.email, username: user.username };
 		clientlist.users.push(formatUser)
@@ -150,6 +149,7 @@ export async function createList(user: User, data: CreateListRequest, socket: So
 
 	connection.manager.save(list).then(list => {
 		response.idList = list.id
+		console.log(list.id)
 		socket.emit("create-list", response)
 	})
 }
@@ -165,13 +165,17 @@ export async function deleteList(user: User, data: DeleteListRequest, socket: So
 		response.code = 403
 		response.status = "User is not the list owner"
 		return;
-	} else await listRep.remove(list)
+	} else
+		await listRep.remove(list)
+    /*let index = user.owner_list.findIndex((l) => l.id === data.id)
+    user.owner_list.splice(index, 1);
+    let indexW = user.watcher_list.findIndex((l) => l.id === data.id)
+    user.watcher_list.splice(indexW, 1);
+    let indexU = user.users_list.findIndex((l) => l.id === data.id)
+    user.users_list.splice(indexU, 1);
+	await connection.getRepository(User).save(user);*/
 
-	// TODO : check if peoples on the list are unsubbed from the list or idk when deleted like does it bug or not
-
-	connection.manager.save(list).then(list => {
-		socket.emit("delete-list", response)
-	})
+	socket.emit("delete-list", response)
 }
 // delete-user-to-list
 export async function deleteUserToList(user: User, data: DelUserToListRequest, socket: Socket) {
